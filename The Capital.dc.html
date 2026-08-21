@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/modernist-9373e713-558b-4025-a9cf-877a2da78c11/styles.css">
+<script src="_ds/modernist-9373e713-558b-4025-a9cf-877a2da78c11/_ds_bundle.js"></script>
+<script src="./image-slot.js"></script>
+<style>
+  body { margin: 0; background: #1a1613; color: #f4f1ee; }
+  a { color: #ec3013; text-decoration: none; }
+  a:hover { color: #f4f1ee; }
+  ::placeholder { color: #7d746b; }
+  @keyframes capUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+  @keyframes capDrift {
+    0%   { transform: translate3d(-8%, 6%, 0) scale(1);    opacity: 0.35; }
+    100% { transform: translate3d(10%, -8%, 0) scale(1.3); opacity: 0.75; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+</style>
+</helmet>
+
+<div style="font-family: var(--font-body); color: #f4f1ee; background: #1a1613; min-height: 100vh;">
+
+  <header style="display: flex; align-items: center; gap: 32px; padding: 18px 40px; background: #100d0b; color: #f4f1ee; border-bottom: 2px solid #ec3013;">
+    <a href="The Capital.dc.html" style="display: flex; align-items: baseline; gap: 10px; color: #f4f1ee;">
+      <span style="font-family: var(--font-heading); font-weight: 700; font-size: 20px; letter-spacing: 0.18em; text-transform: uppercase;">The Capital</span>
+      <span style="font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--color-accent);">Yerevan</span>
+    </a>
+    <nav style="display: flex; gap: 28px; margin-left: auto; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;">
+      <a href="The Capital.dc.html" style="color: var(--color-accent);">{{ navHome }}</a>
+      <a href="Menu.dc.html" style="color: #f4f1ee;">{{ navMenu }}</a>
+      <a href="Visit.dc.html" style="color: #f4f1ee;">{{ navVisit }}</a>
+    </nav>
+    <div style="display: flex; gap: 0; border: 2px solid #4a4038;">
+      <button onClick="{{ setEn }}" style="{{ enBtn }}">EN</button>
+      <button onClick="{{ setRu }}" style="{{ ruBtn }}">RU</button>
+    </div>
+    <a href="tel:+37491282820" class="btn btn-primary" style="font-size: 12px; letter-spacing: 0.12em;">+374 91 282820</a>
+  </header>
+
+  <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); background-color: #221c17; background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 1px, transparent 1px, transparent 3px), repeating-linear-gradient(90deg, rgba(0,0,0,0.16) 0px, rgba(0,0,0,0.16) 1px, transparent 1px, transparent 9px), repeating-linear-gradient(90deg, rgba(0,0,0,0.5) 0px, rgba(0,0,0,0.5) 2px, rgba(255,255,255,0.045) 2px, rgba(255,255,255,0.045) 3px, transparent 3px, transparent 168px), linear-gradient(103deg, #31271f 0%, #1e1814 46%, #2b221b 78%, #1c1713 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), inset 0 -2px 0 rgba(0,0,0,0.45); color: #f4f1ee; border-bottom: 2px solid #3b332c;">
+    <div style="padding: 88px 40px 64px; display: flex; flex-direction: column; gap: 28px; justify-content: center; position: relative; overflow: hidden;">
+      <div style="position: absolute; inset: -20%; pointer-events: none; background: radial-gradient(closest-side, rgba(236,48,19,0.16), rgba(236,48,19,0) 70%); animation: capDrift 22s ease-in-out infinite alternate;"></div>
+      <span style="font-size: 12px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--color-accent); animation: capUp .9s cubic-bezier(.2,.75,.25,1) both; animation-delay: 0.05s;">{{ heroKicker }}</span>
+      <h1 style="font-family: var(--font-heading); font-weight: 700; font-size: clamp(44px, 5.4vw, 76px); line-height: 0.94; letter-spacing: -0.02em; margin: 0; text-wrap: pretty; animation: capUp .9s cubic-bezier(.2,.75,.25,1) both; animation-delay: 0.16s;">{{ heroTitle }}</h1>
+      <p style="font-size: 18px; line-height: 1.5; max-width: 46ch; margin: 0; color: #b9b0a7; text-wrap: pretty; animation: capUp .9s cubic-bezier(.2,.75,.25,1) both; animation-delay: 0.28s;">{{ heroBody }}</p>
+      <div style="display: flex; gap: 16px; flex-wrap: wrap; padding-top: 8px; animation: capUp .9s cubic-bezier(.2,.75,.25,1) both; animation-delay: 0.4s;">
+        <a href="Visit.dc.html" class="btn btn-primary">{{ ctaBook }}</a>
+        <a href="Menu.dc.html" class="btn" style="border: 2px solid #4a4038; background: transparent; color: #f4f1ee;" style-hover="border-color: #ec3013; color: #ec3013;">{{ ctaMenu }}</a>
+      </div>
+    </div>
+    <div class="grayscale" style="position: relative; min-height: 520px; border-left: 2px solid var(--color-accent);">
+      <image-slot id="cap-hero" shape="rect" placeholder="Hero photo, the lounge interior"></image-slot>
+    </div>
+  </section>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); border-bottom: 2px solid #3b332c;">
+    <sc-for list="{{ facts }}" as="f" hint-placeholder-count="4">
+      <div style="padding: 26px 28px; border-right: 2px solid #3b332c; display: flex; flex-direction: column; gap: 6px; animation: capUp linear both; animation-timeline: view(); animation-range: entry 0% entry 55%;">
+        <span style="font-family: var(--font-heading); font-weight: 700; font-size: 26px;">{{ f.value }}</span>
+        <span style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #a89f96;">{{ f.label }}</span>
+      </div>
+    </sc-for>
+  </div>
+
+  <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 0; border-bottom: 2px solid #3b332c;">
+    <div style="padding: 72px 40px; display: flex; flex-direction: column; gap: 22px; border-right: 2px solid #3b332c; background: #1f1a16; animation: capUp linear both; animation-timeline: view(); animation-range: entry 0% entry 55%;">
+      <span style="font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: #ec3013;">{{ aboutKicker }}</span>
+      <h2 style="font-family: var(--font-heading); font-weight: 700; font-size: clamp(30px, 3.2vw, 44px); line-height: 1.02; margin: 0; letter-spacing: -0.01em;">{{ aboutTitle }}</h2>
+      <p style="font-size: 17px; line-height: 1.6; margin: 0; max-width: 50ch; text-wrap: pretty;">{{ aboutP1 }}</p>
+      <p style="font-size: 17px; line-height: 1.6; margin: 0; max-width: 50ch; color: #a89f96; text-wrap: pretty;">{{ aboutP2 }}</p>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; padding-top: 6px;">
+        <sc-for list="{{ aboutTags }}" as="t" hint-placeholder-count="4">
+          <span class="tag" style="border: 1px solid #4a4038; background: transparent; color: #b9b0a7;">{{ t }}</span>
+        </sc-for>
+      </div>
+    </div>
+    <div class="grayscale" style="position: relative; min-height: 440px;">
+      <image-slot id="cap-about" shape="rect" placeholder="Photo, hookah on the table, close up"></image-slot>
+    </div>
+  </section>
+
+  <section style="padding: 72px 40px; border-bottom: 2px solid #3b332c;">
+    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: 36px;">
+      <h2 style="font-family: var(--font-heading); font-weight: 700; font-size: clamp(28px, 3vw, 40px); margin: 0; letter-spacing: -0.01em;">{{ menuTitle }}</h2>
+      <a href="Menu.dc.html" class="btn" style="background: transparent; color: #ec3013;" style-hover="color: #f4f1ee;">{{ menuLink }}</a>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+      <sc-for list="{{ teasers }}" as="c" hint-placeholder-count="3">
+        <article style="border: 2px solid #3b332c; background-color: #241f1b; background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 3px), linear-gradient(160deg, #2c241d 0%, #201a16 100%); display: flex; flex-direction: column; transition: transform .45s cubic-bezier(.2,.75,.25,1), border-color .3s ease; animation: capUp linear both; animation-timeline: view(); animation-range: entry 0% entry 55%;" style-hover="transform: translateY(-6px); border-color: #ec3013;">
+          <div class="grayscale" style="position: relative; height: 200px; border-bottom: 2px solid #3b332c;">
+            <image-slot id="{{ c.slot }}" shape="rect" placeholder="{{ c.ph }}"></image-slot>
+          </div>
+          <div style="padding: 24px; display: flex; flex-direction: column; gap: 10px;">
+            <span style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #ec3013;">{{ c.kicker }}</span>
+            <h3 style="font-family: var(--font-heading); font-weight: 700; font-size: 24px; margin: 0;">{{ c.title }}</h3>
+            <p style="margin: 0; font-size: 15px; line-height: 1.55; color: #a89f96;">{{ c.body }}</p>
+          </div>
+        </article>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="padding: 72px 40px; background: #100d0b; color: #f4f1ee; border-bottom: 2px solid var(--color-accent);">
+    <h2 style="font-family: var(--font-heading); font-weight: 700; font-size: clamp(28px, 3vw, 40px); margin: 0 0 36px; letter-spacing: -0.01em;">{{ revTitle }}</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0; border-top: 2px solid #4a4038;">
+      <sc-for list="{{ reviews }}" as="r" hint-placeholder-count="3">
+        <blockquote style="margin: 0; padding: 32px 28px; border-right: 2px solid #4a4038; display: flex; flex-direction: column; gap: 18px; animation: capUp linear both; animation-timeline: view(); animation-range: entry 0% entry 55%;">
+          <span style="color: var(--color-accent); letter-spacing: 0.3em; font-size: 13px;">★★★★★</span>
+          <p style="margin: 0; font-size: 18px; line-height: 1.5; text-wrap: pretty;">{{ r.text }}</p>
+          <span style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #8e857c; margin-top: auto;">{{ r.name }}</span>
+        </blockquote>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); border-bottom: 2px solid #3b332c;">
+    <div style="padding: 72px 40px; display: flex; flex-direction: column; gap: 24px; border-right: 2px solid #3b332c; animation: capUp linear both; animation-timeline: view(); animation-range: entry 0% entry 55%;">
+      <span style="font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: #ec3013;">{{ locKicker }}</span>
+      <h2 style="font-family: var(--font-heading); font-weight: 700; font-size: clamp(28px, 3vw, 40px); margin: 0; letter-spacing: -0.01em;">27 Mesrop Mashtots Ave</h2>
+      <p style="margin: 0; font-size: 17px; line-height: 1.6;">Yerevan 0002, Armenia</p>
+      <div style="border-top: 2px solid #3b332c; padding-top: 20px; display: flex; flex-direction: column; gap: 12px; max-width: 420px;">
+        <div style="display: flex; justify-content: space-between; gap: 16px; font-size: 15px;">
+          <span>{{ hoursWeek }}</span><span style="font-weight: 700;">12:00 to 00:00</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; gap: 16px; font-size: 15px;">
+          <span>{{ hoursSun }}</span><span style="font-weight: 700;">15:00 to 00:00</span>
+        </div>
+      </div>
+      <div style="display: flex; gap: 16px; flex-wrap: wrap; padding-top: 8px;">
+        <a href="Visit.dc.html" class="btn btn-primary">{{ ctaBook }}</a>
+        <a href="tel:+37491282820" class="btn" style="border: 2px solid #4a4038; background: transparent; color: #f4f1ee;" style-hover="border-color: #ec3013; color: #ec3013;">{{ ctaCall }}</a>
+      </div>
+    </div>
+    <div style="position: relative; min-height: 400px; background: #17130f;">
+      <iframe src="https://www.google.com/maps?q=27+Mesrop+Mashtots+Ave,+Yerevan,+Armenia&amp;z=17&amp;output=embed" style="position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; filter: grayscale(0.35) contrast(1.05);" loading="lazy" title="The Capital on Google Maps" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+  </section>
+
+  <footer style="padding: 48px 40px; display: flex; gap: 40px; flex-wrap: wrap; justify-content: space-between; align-items: flex-start;">
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <span style="font-family: var(--font-heading); font-weight: 700; font-size: 18px; letter-spacing: 0.18em; text-transform: uppercase;">The Capital</span>
+      <span style="font-size: 13px; color: #a89f96;">27 Mesrop Mashtots Ave, Yerevan 0002</span>
+      <a href="tel:+37491282820" style="font-size: 13px;">+374 91 282820</a>
+    </div>
+    <div style="display: flex; gap: 20px; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;">
+      <a href="https://instagram.com">Instagram</a>
+      <a href="https://t.me">Telegram</a>
+      <a href="https://wa.me/37491282820">WhatsApp</a>
+    </div>
+  </footer>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const T = {
+  en: {
+    navHome: "Home", navMenu: "Menu", navVisit: "Visit",
+    heroKicker: "Hookah lounge · Yerevan",
+    heroTitle: "Shisha done properly, from noon on.",
+    heroBody: "The Capital is a hookah lounge on Mesrop Mashtots. Deep armchairs, low light, a bar that opens at noon, and a master who builds every bowl to order.",
+    ctaBook: "Book a table", ctaMenu: "See the menu", ctaCall: "Call us",
+    facts: [
+      { value: "12:00 to 00:00", label: "Open daily" },
+      { value: "40+", label: "Tobacco flavours" },
+      { value: "80", label: "Seats & terrace" },
+      { value: "0002", label: "Mashtots Ave, Yerevan" }
+    ],
+    aboutKicker: "About",
+    aboutTitle: "One room, built for staying longer.",
+    aboutP1: "We opened The Capital for the hours you give to one table. Everything is arranged around the table: the seat you sink into, the shisha in reach, the music kept low enough to talk over.",
+    aboutP2: "Our masters mix by hand, taste every bowl before it leaves the bar, and come back to change the coals so it never goes flat.",
+    aboutTags: ["Hand-mixed bowls", "Open from noon", "Terrace", "No rush"],
+    menuTitle: "What we serve", menuLink: "Full menu",
+    teasers: [
+      { slot: "cap-t1", ph: "Photo, shisha bowl being prepared", kicker: "Shisha", title: "Signature bowls", body: "Forty-plus tobaccos and our own mixes, from cold citrus to heavy dessert blends. Built on ceramic, served on ice." },
+      { slot: "cap-t2", ph: "Photo, cocktails on the bar", kicker: "Bar", title: "Cocktails & tea", body: "Classic cocktails, Armenian brandy, and a full samovar tea list for the tables that stay to closing." },
+      { slot: "cap-t3", ph: "Photo, food plate", kicker: "Kitchen", title: "Food from the grill", body: "Boards, hot snacks and grilled plates from the kitchen, on until 23:30." }
+    ],
+    revTitle: "What guests say",
+    reviews: [
+      { text: "Best shisha in Yerevan. The master actually asks what you like and builds the bowl around it.", name: "Aram G." },
+      { text: "Came at eight and stayed to closing. Service, seats and the terrace, nothing to fix.", name: "Marina P." },
+      { text: "Came for one bowl, ordered food, stayed until they closed. That says enough.", name: "Davit S." }
+    ],
+    locKicker: "Find us", hoursWeek: "Monday - Saturday", hoursSun: "Sunday"
+  },
+  ru: {
+    navHome: "Главная", navMenu: "Меню", navVisit: "Контакты",
+    heroKicker: "Кальянная · Ереван",
+    heroTitle: "Кальян как надо, с полудня.",
+    heroBody: "The Capital, кальянная на Месропа Маштоца. Глубокие кресла, приглушённый свет, бар, который открывается в полдень, и мастер, который забивает каждую чашу под вас.",
+    ctaBook: "Забронировать стол", ctaMenu: "Смотреть меню", ctaCall: "Позвонить",
+    facts: [
+      { value: "12:00 to 00:00", label: "Открыто ежедневно" },
+      { value: "40+", label: "Вкусов табака" },
+      { value: "80", label: "Мест и терраса" },
+      { value: "0002", label: "Пр. Маштоца, Ереван" }
+    ],
+    aboutKicker: "О нас",
+    aboutTitle: "Один зал, чтобы остаться дольше.",
+    aboutP1: "Мы открыли The Capital для тех часов, которые вы отдаёте одному столу. Всё собрано вокруг стола: кресло, в которое проваливаешься, кальян под рукой, музыка достаточно тихая, чтобы разговаривать.",
+    aboutP2: "Мастера миксуют вручную, пробуют каждую чашу перед подачей и возвращаются менять угли, чтобы вкус не проседал.",
+    aboutTags: ["Ручные миксы", "Открыто с полудня", "Терраса", "Без спешки"],
+    menuTitle: "Что у нас есть", menuLink: "Всё меню",
+    teasers: [
+      { slot: "cap-t1", ph: "Фото, приготовление чаши", kicker: "Кальян", title: "Авторские чаши", body: "Больше сорока табаков и собственные миксы, от холодного цитруса до плотных десертных. На керамике, с подачей на льду." },
+      { slot: "cap-t2", ph: "Фото, коктейли на баре", kicker: "Бар", title: "Коктейли и чай", body: "Классические коктейли, армянский коньяк и большая чайная карта с самоваром для тех, кто остаётся до закрытия." },
+      { slot: "cap-t3", ph: "Фото, блюдо", kicker: "Кухня", title: "Еда с гриля", body: "Борды, горячие закуски и блюда на гриле, работает до 23:30." }
+    ],
+    revTitle: "Отзывы гостей",
+    reviews: [
+      { text: "Лучший кальян в Ереване. Мастер реально спрашивает, что вы любите, и собирает чашу под это.", name: "Арам Г." },
+      { text: "Пришли в восемь и остались до закрытия. Сервис, посадка, терраса, менять нечего.", name: "Марина П." },
+      { text: "Пришли на одну чашу, заказали еду и остались до самого закрытия. Этим всё сказано.", name: "Давид С." }
+    ],
+    locKicker: "Как найти", hoursWeek: "Понедельник - Суббота", hoursSun: "Воскресенье"
+  }
+};
+
+class Component extends DCLogic {
+  state = { lang: "en" };
+  componentDidMount() {
+    try {
+      const saved = localStorage.getItem("capital-lang");
+      if (saved === "ru" || saved === "en") this.setState({ lang: saved });
+    } catch (e) {}
+  }
+  set(lang) {
+    try { localStorage.setItem("capital-lang", lang); } catch (e) {}
+    this.setState({ lang });
+  }
+  langBtn(active) {
+    return {
+      font: "inherit", fontSize: "11px", letterSpacing: "0.16em", padding: "7px 12px",
+      border: "none", cursor: "pointer",
+      background: active ? "var(--color-accent)" : "transparent",
+      color: active ? "#fff" : "#b9b0a7"
+    };
+  }
+  renderVals() {
+    const lang = this.state.lang;
+    return Object.assign({}, T[lang], {
+      setEn: () => this.set("en"),
+      setRu: () => this.set("ru"),
+      enBtn: this.langBtn(lang === "en"),
+      ruBtn: this.langBtn(lang === "ru")
+    });
+  }
+}
+
+</script>
+</body>
+</html>

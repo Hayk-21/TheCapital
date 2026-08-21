@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/modernist-9373e713-558b-4025-a9cf-877a2da78c11/styles.css">
+<script src="_ds/modernist-9373e713-558b-4025-a9cf-877a2da78c11/_ds_bundle.js"></script>
+<script src="./image-slot.js"></script>
+<style>
+  body { margin: 0; background: #1a1613; color: #f4f1ee; }
+  a { color: #ec3013; text-decoration: none; }
+  a:hover { color: #f4f1ee; }
+  ::placeholder { color: #7d746b; }
+  @keyframes capUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+  @keyframes capDrift {
+    0%   { transform: translate3d(-8%, 6%, 0) scale(1);    opacity: 0.35; }
+    100% { transform: translate3d(10%, -8%, 0) scale(1.3); opacity: 0.75; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+</style>
+</helmet>
+
+<div style="font-family: var(--font-body); color: #f4f1ee; background: #1a1613; min-height: 100vh;">
+
+  <header style="display: flex; align-items: center; gap: 32px; padding: 18px 40px; background: #100d0b; color: #f4f1ee; border-bottom: 2px solid #ec3013;">
+    <a href="The Capital.dc.html" style="display: flex; align-items: baseline; gap: 10px; color: #f4f1ee;">
+      <span style="font-family: var(--font-heading); font-weight: 700; font-size: 20px; letter-spacing: 0.18em; text-transform: uppercase;">The Capital</span>
+      <span style="font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--color-accent);">Yerevan</span>
+    </a>
+    <nav style="display: flex; gap: 28px; margin-left: auto; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;">
+      <a href="The Capital.dc.html" style="color: #f4f1ee;">{{ navHome }}</a>
+      <a href="Menu.dc.html" style="color: var(--color-accent);">{{ navMenu }}</a>
+      <a href="Visit.dc.html" style="color: #f4f1ee;">{{ navVisit }}</a>
+    </nav>
+    <div style="display: flex; gap: 0; border: 2px solid #4a4038;">
+      <button onClick="{{ setEn }}" style="{{ enBtn }}">EN</button>
+      <button onClick="{{ setRu }}" style="{{ ruBtn }}">RU</button>
+    </div>
+    <a href="tel:+37491282820" class="btn btn-primary" style="font-size: 12px; letter-spacing: 0.12em;">+374 91 282820</a>
+  </header>
+
+  <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); border-bottom: 2px solid #3b332c;">
+    <div style="padding: 72px 40px 56px; display: flex; flex-direction: column; gap: 20px;">
+      <span style="font-size: 12px; letter-spacing: 0.28em; text-transform: uppercase; color: #ec3013; animation: capUp .9s cubic-bezier(.2,.75,.25,1) both; animation-delay: 0.05s;">{{ pageKicker }}</span>
+      <h1 style="font-family: var(--font-heading); font-weight: 700; font-size: clamp(38px, 4.6vw, 64px); line-height: 0.96; margin: 0; letter-spacing: -0.02em; animation: capUp .9s cubic-bezier(.2,.75,.25,1) both; animation-delay: 0.16s;">{{ pageTitle }}</h1>
+      <p style="font-size: 17px; line-height: 1.6; max-width: 52ch; margin: 0; color: #a89f96; text-wrap: pretty;">{{ pageBody }}</p>
+    </div>
+    <div class="grayscale" style="position: relative; min-height: 340px; border-left: 2px solid #3b332c;">
+      <image-slot id="menu-hero" shape="rect" placeholder="Photo, bowl and coals on the bar"></image-slot>
+    </div>
+  </section>
+
+  <section style="padding: 64px 40px; border-bottom: 2px solid #3b332c; background-color: #221c17; background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 1px, transparent 1px, transparent 3px), repeating-linear-gradient(90deg, rgba(0,0,0,0.16) 0px, rgba(0,0,0,0.16) 1px, transparent 1px, transparent 9px), repeating-linear-gradient(90deg, rgba(0,0,0,0.5) 0px, rgba(0,0,0,0.5) 2px, rgba(255,255,255,0.045) 2px, rgba(255,255,255,0.045) 3px, transparent 3px, transparent 168px), linear-gradient(103deg, #31271f 0%, #1e1814 46%, #2b221b 78%, #1c1713 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), inset 0 -2px 0 rgba(0,0,0,0.45);">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 56px;">
+      <sc-for list="{{ shisha }}" as="g" hint-placeholder-count="2">
+        <div style="display: flex; flex-direction: column; gap: 18px; animation: capUp linear both; animation-timeline: view(); animation-range: entry 0% entry 55%;">
+          <div style="display: flex; align-items: baseline; gap: 14px; border-bottom: 2px solid #f4f1ee; padding-bottom: 12px;">
+            <h2 style="font-family: var(--font-heading); font-weight: 700; font-size: 28px; margin: 0;">{{ g.title }}</h2>
+            <span style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #ec3013; margin-left: auto;">{{ g.note }}</span>
+          </div>
+          <sc-for list="{{ g.items }}" as="i" hint-placeholder-count="4">
+            <div style="display: flex; gap: 20px; align-items: baseline; padding-bottom: 14px; border-bottom: 1px solid #332c26;">
+              <div style="display: flex; flex-direction: column; gap: 5px;">
+                <span style="font-family: var(--font-heading); font-weight: 700; font-size: 17px;">{{ i.name }}</span>
+                <span style="font-size: 14px; line-height: 1.5; color: #a89f96;">{{ i.desc }}</span>
+              </div>
+              <span style="font-family: var(--font-heading); font-weight: 700; font-size: 17px; margin-left: auto; white-space: nowrap;">{{ i.price }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="padding: 56px 40px; background: #ec3013; color: #fff; border-bottom: 2px solid #100d0b; display: flex; gap: 40px; align-items: center; flex-wrap: wrap;">
+    <p style="font-family: var(--font-heading); font-weight: 700; font-size: clamp(26px, 2.6vw, 34px); line-height: 1.08; margin: 0; max-width: 24ch; letter-spacing: -0.01em; animation: capUp linear both; animation-timeline: view(); animation-range: entry 0% entry 55%;">{{ posterText }}</p>
+    <a href="Visit.dc.html" class="btn" style="background: #100d0b; color: #fff; margin-left: auto;" style-hover="background: #f4f1ee; color: #100d0b;">{{ ctaBook }}</a>
+  </section>
+
+  <section style="padding: 64px 40px; border-bottom: 2px solid #3b332c;">
+    <h2 style="font-family: var(--font-heading); font-weight: 700; font-size: clamp(28px, 3vw, 40px); margin: 0 0 32px; letter-spacing: -0.01em;">{{ kitchenTitle }}</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 48px;">
+      <sc-for list="{{ food }}" as="g" hint-placeholder-count="3">
+        <div style="display: flex; flex-direction: column; gap: 16px; animation: capUp linear both; animation-timeline: view(); animation-range: entry 0% entry 55%;">
+          <h3 style="font-family: var(--font-heading); font-weight: 700; font-size: 22px; margin: 0; border-bottom: 2px solid #f4f1ee; padding-bottom: 10px;">{{ g.title }}</h3>
+          <sc-for list="{{ g.items }}" as="i" hint-placeholder-count="4">
+            <div style="display: flex; gap: 16px; align-items: baseline; padding-bottom: 10px; border-bottom: 1px solid #332c26;">
+              <span style="font-size: 15px;">{{ i.name }}</span>
+              <span style="font-weight: 700; font-size: 15px; margin-left: auto; white-space: nowrap;">{{ i.price }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </sc-for>
+    </div>
+    <p style="font-size: 13px; color: #a89f96; margin: 32px 0 0;">{{ priceNote }}</p>
+  </section>
+
+  <footer style="padding: 48px 40px; display: flex; gap: 40px; flex-wrap: wrap; justify-content: space-between; align-items: flex-start;">
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <span style="font-family: var(--font-heading); font-weight: 700; font-size: 18px; letter-spacing: 0.18em; text-transform: uppercase;">The Capital</span>
+      <span style="font-size: 13px; color: #a89f96;">27 Mesrop Mashtots Ave, Yerevan 0002</span>
+      <a href="tel:+37491282820" style="font-size: 13px;">+374 91 282820</a>
+    </div>
+    <div style="display: flex; gap: 20px; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;">
+      <a href="https://instagram.com">Instagram</a>
+      <a href="https://t.me">Telegram</a>
+      <a href="https://wa.me/37491282820">WhatsApp</a>
+    </div>
+  </footer>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const T = {
+  en: {
+    navHome: "Home", navMenu: "Menu", navVisit: "Visit",
+    pageKicker: "Menu", pageTitle: "Bowls, bar and kitchen.",
+    pageBody: "Everything is built to order. Tell the master what you want, cold, sweet, heavy, sour, and the bowl comes back tuned to it. Coals changed at the table for as long as you sit.",
+    ctaBook: "Book a table",
+    shisha: [
+      { title: "Classic bowls", note: "Ceramic · 1 hour+", items: [
+        { name: "Double Apple", desc: "The one everybody knows. Anise-heavy, thick smoke.", price: "5,000 ֏" },
+        { name: "Mint & Ice", desc: "Cold, clean, no sugar. Good after food.", price: "5,000 ֏" },
+        { name: "Grape Berry", desc: "Dark grape with blackcurrant, medium strength.", price: "5,500 ֏" },
+        { name: "Peach Blossom", desc: "Soft peach, light floral finish.", price: "5,500 ֏" }
+      ]},
+      { title: "Signature mixes", note: "House recipes", items: [
+        { name: "The Capital", desc: "Our own: citrus, tonic, cold mint. Strong.", price: "7,000 ֏" },
+        { name: "Mashtots Mix", desc: "Fig, cardamom and cream on a fruit bowl.", price: "7,500 ֏" },
+        { name: "Ararat Sour", desc: "Sour cherry, lime, hint of basil.", price: "7,000 ֏" },
+        { name: "Black Samovar", desc: "Black tea, bergamot and honey tobacco.", price: "7,500 ֏" }
+      ]},
+      { title: "Fruit bowls", note: "Cut to order", items: [
+        { name: "Pineapple", desc: "Whole fruit bowl, full hour of cold smoke.", price: "9,000 ֏" },
+        { name: "Grapefruit", desc: "Bitter-citrus base, works with any mint mix.", price: "8,500 ֏" },
+        { name: "Melon", desc: "Sweet and mild, the long-table choice.", price: "9,000 ֏" }
+      ]},
+      { title: "Premium tobacco", note: "By request", items: [
+        { name: "Dark leaf", desc: "For guests who want it heavy. Ask the master.", price: "9,500 ֏" },
+        { name: "Rare single flavours", desc: "Rotating shelf, whatever came in this month.", price: "from 9,000 ֏" }
+      ]}
+    ],
+    posterText: "One master, one table, coals changed until you leave.",
+    kitchenTitle: "Bar & kitchen",
+    food: [
+      { title: "Cocktails", items: [
+        { name: "Old Fashioned", price: "3,500 ֏" }, { name: "Negroni", price: "3,500 ֏" },
+        { name: "Espresso Martini", price: "3,800 ֏" }, { name: "Aperol Spritz", price: "3,200 ֏" },
+        { name: "Armenian brandy, 50ml", price: "from 2,500 ֏" }
+      ]},
+      { title: "Tea & soft", items: [
+        { name: "Samovar tea, for the table", price: "4,500 ֏" }, { name: "Mountain herb tea", price: "1,800 ֏" },
+        { name: "Fresh lemonade", price: "1,500 ֏" }, { name: "Espresso / Americano", price: "900 ֏" },
+        { name: "Still / sparkling water", price: "700 ֏" }
+      ]},
+      { title: "Food", items: [
+        { name: "Cheese & dried fruit board", price: "5,500 ֏" }, { name: "Grilled chicken skewers", price: "4,200 ֏" },
+        { name: "Beef kebab plate", price: "5,800 ֏" }, { name: "Hot cheese sticks", price: "2,800 ֏" },
+        { name: "Fries with herbs", price: "1,900 ֏" }
+      ]}
+    ],
+    priceNote: "Prices in Armenian dram, service not included. Kitchen closes 30 minutes before the bar."
+  },
+  ru: {
+    navHome: "Главная", navMenu: "Меню", navVisit: "Контакты",
+    pageKicker: "Меню", pageTitle: "Чаши, бар и кухня.",
+    pageBody: "Всё делается под гостя. Скажите мастеру, какой вкус нужен, холодный, сладкий, плотный, кислый, и чаша вернётся под это. Угли меняем за столом, пока вы сидите.",
+    ctaBook: "Забронировать стол",
+    shisha: [
+      { title: "Классика", note: "Керамика · от 1 часа", items: [
+        { name: "Двойное яблоко", desc: "То самое. Анис, плотный дым.", price: "5 000 ֏" },
+        { name: "Мята и лёд", desc: "Холодный, чистый, без сахара. Хорош после еды.", price: "5 000 ֏" },
+        { name: "Виноград и ягоды", desc: "Тёмный виноград с чёрной смородиной, средняя крепость.", price: "5 500 ֏" },
+        { name: "Персиковый цвет", desc: "Мягкий персик, лёгкий цветочный финал.", price: "5 500 ֏" }
+      ]},
+      { title: "Авторские миксы", note: "Наши рецепты", items: [
+        { name: "The Capital", desc: "Наш микс: цитрус, тоник, холодная мята. Крепкий.", price: "7 000 ֏" },
+        { name: "Микс Маштоца", desc: "Инжир, кардамон и крем на фруктовой чаше.", price: "7 500 ֏" },
+        { name: "Арарат сауэр", desc: "Кислая черешня, лайм, немного базилика.", price: "7 000 ֏" },
+        { name: "Чёрный самовар", desc: "Чёрный чай, бергамот и медовый табак.", price: "7 500 ֏" }
+      ]},
+      { title: "Фруктовые чаши", note: "Режем при вас", items: [
+        { name: "Ананас", desc: "Целый фрукт, час холодного дыма.", price: "9 000 ֏" },
+        { name: "Грейпфрут", desc: "Горько-цитрусовая база, идёт с любой мятой.", price: "8 500 ֏" },
+        { name: "Дыня", desc: "Сладкая и мягкая, выбор для большого стола.", price: "9 000 ֏" }
+      ]},
+      { title: "Премиум табак", note: "По запросу", items: [
+        { name: "Тёмный лист", desc: "Для тех, кому нужно плотнее. Спросите мастера.", price: "9 500 ֏" },
+        { name: "Редкие моновкусы", desc: "Полка меняется, то, что пришло в этом месяце.", price: "от 9 000 ֏" }
+      ]}
+    ],
+    posterText: "Один мастер, один стол, угли до самого конца вечера.",
+    kitchenTitle: "Бар и кухня",
+    food: [
+      { title: "Коктейли", items: [
+        { name: "Old Fashioned", price: "3 500 ֏" }, { name: "Negroni", price: "3 500 ֏" },
+        { name: "Espresso Martini", price: "3 800 ֏" }, { name: "Aperol Spritz", price: "3 200 ֏" },
+        { name: "Армянский коньяк, 50 мл", price: "от 2 500 ֏" }
+      ]},
+      { title: "Чай и безалкогольное", items: [
+        { name: "Чай в самоваре, на компанию", price: "4 500 ֏" }, { name: "Горный травяной чай", price: "1 800 ֏" },
+        { name: "Домашний лимонад", price: "1 500 ֏" }, { name: "Эспрессо / американо", price: "900 ֏" },
+        { name: "Вода без газа / с газом", price: "700 ֏" }
+      ]},
+      { title: "Кухня", items: [
+        { name: "Сырная доска с сухофруктами", price: "5 500 ֏" }, { name: "Куриные шашлычки", price: "4 200 ֏" },
+        { name: "Говяжий кебаб", price: "5 800 ֏" }, { name: "Горячие сырные палочки", price: "2 800 ֏" },
+        { name: "Картофель фри с зеленью", price: "1 900 ֏" }
+      ]}
+    ],
+    priceNote: "Цены в драмах, обслуживание не включено. Кухня закрывается на 30 минут раньше бара."
+  }
+};
+
+class Component extends DCLogic {
+  state = { lang: "en" };
+  componentDidMount() {
+    try {
+      const saved = localStorage.getItem("capital-lang");
+      if (saved === "ru" || saved === "en") this.setState({ lang: saved });
+    } catch (e) {}
+  }
+  set(lang) {
+    try { localStorage.setItem("capital-lang", lang); } catch (e) {}
+    this.setState({ lang });
+  }
+  langBtn(active) {
+    return {
+      font: "inherit", fontSize: "11px", letterSpacing: "0.16em", padding: "7px 12px",
+      border: "none", cursor: "pointer",
+      background: active ? "var(--color-accent)" : "transparent",
+      color: active ? "#fff" : "#b9b0a7"
+    };
+  }
+  renderVals() {
+    const lang = this.state.lang;
+    return Object.assign({}, T[lang], {
+      setEn: () => this.set("en"),
+      setRu: () => this.set("ru"),
+      enBtn: this.langBtn(lang === "en"),
+      ruBtn: this.langBtn(lang === "ru")
+    });
+  }
+}
+
+</script>
+</body>
+</html>

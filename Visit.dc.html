@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/modernist-9373e713-558b-4025-a9cf-877a2da78c11/styles.css">
+<script src="_ds/modernist-9373e713-558b-4025-a9cf-877a2da78c11/_ds_bundle.js"></script>
+<script src="./image-slot.js"></script>
+<style>
+  body { margin: 0; background: #1a1613; color: #f4f1ee; }
+  a { color: #ec3013; text-decoration: none; }
+  a:hover { color: #f4f1ee; }
+  ::placeholder { color: #7d746b; }
+  @keyframes capUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+  @keyframes capDrift {
+    0%   { transform: translate3d(-8%, 6%, 0) scale(1);    opacity: 0.35; }
+    100% { transform: translate3d(10%, -8%, 0) scale(1.3); opacity: 0.75; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+</style>
+</helmet>
+
+<div style="font-family: var(--font-body); color: #f4f1ee; background: #1a1613; min-height: 100vh;">
+
+  <header style="display: flex; align-items: center; gap: 32px; padding: 18px 40px; background: #100d0b; color: #f4f1ee; border-bottom: 2px solid #ec3013;">
+    <a href="The Capital.dc.html" style="display: flex; align-items: baseline; gap: 10px; color: #f4f1ee;">
+      <span style="font-family: var(--font-heading); font-weight: 700; font-size: 20px; letter-spacing: 0.18em; text-transform: uppercase;">The Capital</span>
+      <span style="font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--color-accent);">Yerevan</span>
+    </a>
+    <nav style="display: flex; gap: 28px; margin-left: auto; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;">
+      <a href="The Capital.dc.html" style="color: #f4f1ee;">{{ navHome }}</a>
+      <a href="Menu.dc.html" style="color: #f4f1ee;">{{ navMenu }}</a>
+      <a href="Visit.dc.html" style="color: var(--color-accent);">{{ navVisit }}</a>
+    </nav>
+    <div style="display: flex; gap: 0; border: 2px solid #4a4038;">
+      <button onClick="{{ setEn }}" style="{{ enBtn }}">EN</button>
+      <button onClick="{{ setRu }}" style="{{ ruBtn }}">RU</button>
+    </div>
+    <a href="tel:+37491282820" class="btn btn-primary" style="font-size: 12px; letter-spacing: 0.12em;">+374 91 282820</a>
+  </header>
+
+  <section style="padding: 72px 40px 48px; border-bottom: 2px solid #3b332c; display: flex; flex-direction: column; gap: 18px;">
+    <span style="font-size: 12px; letter-spacing: 0.28em; text-transform: uppercase; color: #ec3013; animation: capUp .9s cubic-bezier(.2,.75,.25,1) both; animation-delay: 0.05s;">{{ pageKicker }}</span>
+    <h1 style="font-family: var(--font-heading); font-weight: 700; font-size: clamp(38px, 4.6vw, 64px); line-height: 0.96; margin: 0; letter-spacing: -0.02em; animation: capUp .9s cubic-bezier(.2,.75,.25,1) both; animation-delay: 0.16s;">{{ pageTitle }}</h1>
+    <p style="font-size: 17px; line-height: 1.6; max-width: 56ch; margin: 0; color: #a89f96; text-wrap: pretty;">{{ pageBody }}</p>
+  </section>
+
+  <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); border-bottom: 2px solid #3b332c;">
+    <div style="padding: 56px 40px; border-right: 2px solid #3b332c; display: flex; flex-direction: column; gap: 22px; background-color: #221c17; background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 1px, transparent 1px, transparent 3px), repeating-linear-gradient(90deg, rgba(0,0,0,0.16) 0px, rgba(0,0,0,0.16) 1px, transparent 1px, transparent 9px), repeating-linear-gradient(90deg, rgba(0,0,0,0.5) 0px, rgba(0,0,0,0.5) 2px, rgba(255,255,255,0.045) 2px, rgba(255,255,255,0.045) 3px, transparent 3px, transparent 168px), linear-gradient(103deg, #31271f 0%, #1e1814 46%, #2b221b 78%, #1c1713 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), inset 0 -2px 0 rgba(0,0,0,0.45);">
+      <h2 style="font-family: var(--font-heading); font-weight: 700; font-size: 26px; margin: 0;">{{ hoursTitle }}</h2>
+      <div style="display: flex; flex-direction: column; animation: capUp linear both; animation-timeline: view(); animation-range: entry 0% entry 55%;">
+        <sc-for list="{{ hours }}" as="h" hint-placeholder-count="7">
+          <div style="display: flex; justify-content: space-between; gap: 20px; padding: 13px 0; border-bottom: 1px solid #332c26; font-size: 16px;">
+            <span>{{ h.day }}</span>
+            <span style="font-weight: 700;">{{ h.time }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <p style="font-size: 14px; color: #a89f96; margin: 0;">{{ hoursNote }}</p>
+    </div>
+    <div style="padding: 56px 40px; display: flex; flex-direction: column; gap: 22px;">
+      <h2 style="font-family: var(--font-heading); font-weight: 700; font-size: 26px; margin: 0;">{{ addressTitle }}</h2>
+      <p style="margin: 0; font-size: 20px; line-height: 1.45; font-family: var(--font-heading); font-weight: 700;">27 Mesrop Mashtots Ave<br>Yerevan 0002, Armenia</p>
+      <div style="display: flex; flex-direction: column; gap: 10px; font-size: 16px;">
+        <a href="tel:+37491282820">+374 91 282820</a>
+        <a href="https://wa.me/37491282820">WhatsApp · +374 91 282820</a>
+        <a href="mailto:hello@thecapital.am">hello@thecapital.am</a>
+      </div>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; padding-top: 4px;">
+        <a href="https://maps.google.com/?q=27+Mesrop+Mashtots+Ave,+Yerevan" class="btn" style="border: 2px solid #4a4038; background: transparent; color: #f4f1ee;" style-hover="border-color: #ec3013; color: #ec3013;">{{ ctaMap }}</a>
+        <a href="https://instagram.com" class="btn" style="background: transparent; color: #ec3013;" style-hover="color: #f4f1ee;">Instagram</a>
+        <a href="https://t.me" class="btn" style="background: transparent; color: #ec3013;" style-hover="color: #f4f1ee;">Telegram</a>
+      </div>
+      <div style="position: relative; height: 300px; border: 2px solid #3b332c; margin-top: 8px; background: #17130f;">
+        <iframe src="https://www.google.com/maps?q=27+Mesrop+Mashtots+Ave,+Yerevan,+Armenia&amp;z=17&amp;output=embed" style="width: 100%; height: 100%; border: 0; display: block; filter: grayscale(0.35) contrast(1.05);" loading="lazy" title="The Capital on Google Maps" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); border-bottom: 2px solid #3b332c;">
+    <div style="padding: 64px 40px; border-right: 2px solid #3b332c;">
+      <h2 style="font-family: var(--font-heading); font-weight: 700; font-size: clamp(28px, 3vw, 40px); margin: 0 0 10px; letter-spacing: -0.01em;">{{ bookTitle }}</h2>
+      <p style="font-size: 16px; line-height: 1.6; color: #a89f96; margin: 0 0 32px; max-width: 48ch;">{{ bookBody }}</p>
+
+      <sc-if value="{{ sent }}" hint-placeholder-val="{{ false }}">
+        <div style="border: 2px solid var(--color-accent); padding: 28px; display: flex; flex-direction: column; gap: 10px;">
+          <span style="font-family: var(--font-heading); font-weight: 700; font-size: 22px;">{{ sentTitle }}</span>
+          <span style="font-size: 15px; line-height: 1.6; color: #a89f96;">{{ sentBody }}</span>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ notSent }}" hint-placeholder-val="{{ true }}">
+        <form onSubmit="{{ submit }}" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 20px; max-width: 620px; animation: capUp linear both; animation-timeline: view(); animation-range: entry 0% entry 55%;">
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <label style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #a89f96;" for="cap-name">{{ fName }}</label>
+            <input style="font-family: var(--font-body); font-size: 15px; color: #f4f1ee; background: #17130f; border: 2px solid #3b332c; padding: 12px 14px; width: 100%; box-sizing: border-box;" style-focus="border-color: #ec3013; outline: none;" id="cap-name" type="text" required="required">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <label style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #a89f96;" for="cap-phone">{{ fPhone }}</label>
+            <input style="font-family: var(--font-body); font-size: 15px; color: #f4f1ee; background: #17130f; border: 2px solid #3b332c; padding: 12px 14px; width: 100%; box-sizing: border-box;" style-focus="border-color: #ec3013; outline: none;" id="cap-phone" type="tel" required="required">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <label style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #a89f96;" for="cap-date">{{ fDate }}</label>
+            <input style="font-family: var(--font-body); font-size: 15px; color: #f4f1ee; background: #17130f; border: 2px solid #3b332c; padding: 12px 14px; width: 100%; box-sizing: border-box;" style-focus="border-color: #ec3013; outline: none;" id="cap-date" type="date">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <label style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #a89f96;" for="cap-time">{{ fTime }}</label>
+            <input style="font-family: var(--font-body); font-size: 15px; color: #f4f1ee; background: #17130f; border: 2px solid #3b332c; padding: 12px 14px; width: 100%; box-sizing: border-box;" style-focus="border-color: #ec3013; outline: none;" id="cap-time" type="time">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <label style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #a89f96;" for="cap-guests">{{ fGuests }}</label>
+            <input style="font-family: var(--font-body); font-size: 15px; color: #f4f1ee; background: #17130f; border: 2px solid #3b332c; padding: 12px 14px; width: 100%; box-sizing: border-box;" style-focus="border-color: #ec3013; outline: none;" id="cap-guests" type="number" min="1" max="20">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <label style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #a89f96;" for="cap-seat">{{ fSeat }}</label>
+            <select style="font-family: var(--font-body); font-size: 15px; color: #f4f1ee; background: #17130f; border: 2px solid #3b332c; padding: 12px 14px; width: 100%; box-sizing: border-box;" style-focus="border-color: #ec3013; outline: none;" id="cap-seat">
+              <sc-for list="{{ seatOptions }}" as="s" hint-placeholder-count="3">
+                <option>{{ s }}</option>
+              </sc-for>
+            </select>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; grid-column: 1 / -1;">
+            <label style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #a89f96;" for="cap-note">{{ fNote }}</label>
+            <input style="font-family: var(--font-body); font-size: 15px; color: #f4f1ee; background: #17130f; border: 2px solid #3b332c; padding: 12px 14px; width: 100%; box-sizing: border-box;" style-focus="border-color: #ec3013; outline: none;" id="cap-note" type="text">
+          </div>
+          <button type="submit" class="btn btn-primary" style="grid-column: 1 / -1; justify-self: start;">{{ fSubmit }}</button>
+        </form>
+      </sc-if>
+    </div>
+    <div class="grayscale" style="position: relative; min-height: 480px;">
+      <image-slot id="visit-room" shape="rect" placeholder="Photo, the room, full and lit"></image-slot>
+    </div>
+  </section>
+
+  <section style="padding: 56px 40px; background: #100d0b; color: #f4f1ee; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0; border-bottom: 2px solid var(--color-accent);">
+    <sc-for list="{{ rules }}" as="r" hint-placeholder-count="3">
+      <div style="padding: 0 28px; border-right: 2px solid #4a4038; display: flex; flex-direction: column; gap: 10px; animation: capUp linear both; animation-timeline: view(); animation-range: entry 0% entry 55%;">
+        <span style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-accent);">{{ r.label }}</span>
+        <span style="font-size: 16px; line-height: 1.55; color: #b9b0a7;">{{ r.text }}</span>
+      </div>
+    </sc-for>
+  </section>
+
+  <footer style="padding: 48px 40px; display: flex; gap: 40px; flex-wrap: wrap; justify-content: space-between; align-items: flex-start;">
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <span style="font-family: var(--font-heading); font-weight: 700; font-size: 18px; letter-spacing: 0.18em; text-transform: uppercase;">The Capital</span>
+      <span style="font-size: 13px; color: #a89f96;">27 Mesrop Mashtots Ave, Yerevan 0002</span>
+      <a href="tel:+37491282820" style="font-size: 13px;">+374 91 282820</a>
+    </div>
+    <div style="display: flex; gap: 20px; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;">
+      <a href="https://instagram.com">Instagram</a>
+      <a href="https://t.me">Telegram</a>
+      <a href="https://wa.me/37491282820">WhatsApp</a>
+    </div>
+  </footer>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const T = {
+  en: {
+    navHome: "Home", navMenu: "Menu", navVisit: "Visit",
+    pageKicker: "Visit", pageTitle: "Find us, call us, hold a table.",
+    pageBody: "We are on Mesrop Mashtots, five minutes from Republic Square. Weekends fill up early, book ahead if you are coming with a group.",
+    hoursTitle: "Hours",
+    hours: [
+      { day: "Monday", time: "12:00 to 00:00" }, { day: "Tuesday", time: "12:00 to 00:00" },
+      { day: "Wednesday", time: "12:00 to 00:00" }, { day: "Thursday", time: "12:00 to 00:00" },
+      { day: "Friday", time: "12:00 to 00:00" }, { day: "Saturday", time: "12:00 to 00:00" },
+      { day: "Sunday", time: "15:00 to 00:00" }
+    ],
+    hoursNote: "Last shisha order 30 minutes before closing.",
+    addressTitle: "Address & contact", ctaMap: "Open in maps",
+    bookTitle: "Book a table", bookBody: "Send the request and we will confirm by phone or WhatsApp. For six guests or more, call us directly.",
+    fName: "Name", fPhone: "Phone", fDate: "Date", fTime: "Time", fGuests: "Guests", fSeat: "Seating", fNote: "Anything we should know",
+    seatOptions: ["No preference", "Sofa corner", "Terrace", "Near the bar"],
+    fSubmit: "Send request",
+    sentTitle: "Request sent.", sentBody: "We will call you back to confirm. If it is urgent, ring +374 91 282820.",
+    rules: [
+      { label: "Age", text: "18+ only. ID may be requested at the door." },
+      { label: "Groups", text: "Tables of six or more by phone, with a deposit on weekends." },
+      { label: "Last order", text: "Shisha 30 minutes before closing, kitchen at 23:30." }
+    ]
+  },
+  ru: {
+    navHome: "Главная", navMenu: "Меню", navVisit: "Контакты",
+    pageKicker: "Контакты", pageTitle: "Найти, позвонить, забронировать.",
+    pageBody: "Мы на Месропа Маштоца, пять минут от площади Республики. По выходным зал заполняется рано, если идёте компанией, лучше забронировать заранее.",
+    hoursTitle: "Часы работы",
+    hours: [
+      { day: "Понедельник", time: "12:00 to 00:00" }, { day: "Вторник", time: "12:00 to 00:00" },
+      { day: "Среда", time: "12:00 to 00:00" }, { day: "Четверг", time: "12:00 to 00:00" },
+      { day: "Пятница", time: "12:00 to 00:00" }, { day: "Суббота", time: "12:00 to 00:00" },
+      { day: "Воскресенье", time: "15:00 to 00:00" }
+    ],
+    hoursNote: "Последний заказ кальяна за 30 минут до закрытия.",
+    addressTitle: "Адрес и связь", ctaMap: "Открыть на карте",
+    bookTitle: "Бронь стола", bookBody: "Отправьте заявку, мы подтвердим по телефону или в WhatsApp. Для компании от шести человек звоните напрямую.",
+    fName: "Имя", fPhone: "Телефон", fDate: "Дата", fTime: "Время", fGuests: "Гостей", fSeat: "Посадка", fNote: "Что нам стоит знать",
+    seatOptions: ["Без предпочтений", "Диванный угол", "Терраса", "У бара"],
+    fSubmit: "Отправить заявку",
+    sentTitle: "Заявка отправлена.", sentBody: "Мы перезвоним для подтверждения. Если срочно, +374 91 282820.",
+    rules: [
+      { label: "Возраст", text: "Только 18+. На входе могут спросить документ." },
+      { label: "Компании", text: "Столы от шести человек, по телефону, по выходным с депозитом." },
+      { label: "Последний заказ", text: "Кальян за 30 минут до закрытия, кухня, в 23:30." }
+    ]
+  }
+};
+
+class Component extends DCLogic {
+  state = { lang: "en", sent: false };
+  componentDidMount() {
+    try {
+      const saved = localStorage.getItem("capital-lang");
+      if (saved === "ru" || saved === "en") this.setState({ lang: saved });
+    } catch (e) {}
+  }
+  set(lang) {
+    try { localStorage.setItem("capital-lang", lang); } catch (e) {}
+    this.setState({ lang });
+  }
+  langBtn(active) {
+    return {
+      font: "inherit", fontSize: "11px", letterSpacing: "0.16em", padding: "7px 12px",
+      border: "none", cursor: "pointer",
+      background: active ? "var(--color-accent)" : "transparent",
+      color: active ? "#fff" : "#b9b0a7"
+    };
+  }
+  renderVals() {
+    const lang = this.state.lang;
+    return Object.assign({}, T[lang], {
+      setEn: () => this.set("en"),
+      setRu: () => this.set("ru"),
+      enBtn: this.langBtn(lang === "en"),
+      ruBtn: this.langBtn(lang === "ru"),
+      sent: this.state.sent,
+      notSent: !this.state.sent,
+      submit: (e) => { e.preventDefault(); this.setState({ sent: true }); }
+    });
+  }
+}
+
+</script>
+</body>
+</html>
