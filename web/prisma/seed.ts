@@ -124,6 +124,30 @@ const TEXTS: Record<string, Record<string, Pair | [...Pair, "multiline"]>> = {
       "multiline",
     ],
   },
+  shop: {
+    seoTitle: ["Hookah shop — The Capital", "Наши дистрибуции — The Capital"],
+    seoDescription: [
+      "Hookah tobacco and coal with delivery across Yerevan.",
+      "Кальянный табак и угли с доставкой по Еревану.",
+      "multiline",
+    ],
+    pageKicker: ["Hookah shop", "Наши дистрибуции"],
+    pageTitle: ["Tobacco and coal, delivered.", "Табак и угли, с доставкой."],
+    pageBody: [
+      "What we keep on the shelf, now to take home. Delivery across Yerevan, payment on receipt.",
+      "То, что стоит у нас на полке, теперь можно забрать домой. Доставка по Еревану, оплата при получении.",
+      "multiline",
+    ],
+    catTobacco: ["Tobacco", "Табаки"],
+    catCoal: ["Coal", "Угли"],
+    searchHint: ["Search by flavour", "Поиск по вкусу"],
+    backToBrands: ["All brands", "Все бренды"],
+    emptyShop: [
+      "The shop is being filled in. Call us and we will sort it out by phone.",
+      "Магазин пока наполняется. Позвоните — соберём заказ по телефону.",
+      "multiline",
+    ],
+  },
   visit: {
     seoTitle: ["Visit — The Capital", "Контакты — The Capital"],
     seoDescription: [

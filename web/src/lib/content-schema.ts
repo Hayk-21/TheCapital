@@ -11,13 +11,14 @@ export type Lang = (typeof LANGS)[number];
 export const LANG_LABEL: Record<Lang, string> = { en: "EN", ru: "RU" };
 
 /** Страницы сайта. "common" — сквозные элементы (шапка, подвал). */
-export const SCOPES = ["common", "home", "menu", "visit"] as const;
+export const SCOPES = ["common", "home", "menu", "shop", "visit"] as const;
 export type Scope = (typeof SCOPES)[number];
 
 export const SCOPE_LABEL: Record<Scope, string> = {
   common: "Общее",
   home: "Главная",
   menu: "Меню",
+  shop: "Наши дистрибуции",
   visit: "Контакты",
 };
 

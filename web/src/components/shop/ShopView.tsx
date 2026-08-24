@@ -2,6 +2,10 @@
 
 import { useMemo, useState } from "react";
 import { useContent } from "@/components/editor/ContentProvider";
+import { Editable } from "@/components/editor/Editable";
+import { Txt } from "@/components/editor/fields";
+import { updateBrand } from "@/lib/actions";
+import { AddBrand, AddProduct, BrandCardEdit, HiddenBrands, ProductCardEdit } from "./ShopEdit";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { useCart } from "./CartProvider";
@@ -11,7 +15,13 @@ import type { Lang } from "@/lib/content-schema";
 
 export type ShopVariant = { id: string; size: string; price: number; inStock: boolean };
 export type ShopProduct = { id: string; name: string; variants: ShopVariant[] };
-export type ShopBrand = { id: string; category: string; name: string; products: ShopProduct[] };
+export type ShopBrand = {
+  id: string;
+  category: string;
+  name: string;
+  visible: boolean;
+  products: ShopProduct[];
+};
 
 /**
  * Витрина в два шага: сначала бренды, потом вкусы выбранного бренда.
@@ -21,7 +31,7 @@ export type ShopBrand = { id: string; category: string; name: string; products: 
  * идут в браузере, без запроса на каждый символ.
  */
 export function ShopView({ brands }: { brands: ShopBrand[] }) {
-  const { lang, content } = useContent();
+  const { lang, content, editing, save } = useContent();
   const { add } = useCart();
 
   const [category, setCategory] = useState("tobacco");
@@ -32,8 +42,8 @@ export function ShopView({ brands }: { brands: ShopBrand[] }) {
   const searching = query.trim().length > 0;
 
   const inCategory = useMemo(
-    () => brands.filter((b) => b.category === category),
-    [brands, category],
+    () => brands.filter((b) => b.category === category && (editing || b.visible)),
+    [brands, category, editing],
   );
 
   const brand = openBrand ? brands.find((b) => b.id === openBrand) ?? null : null;
@@ -71,24 +81,19 @@ export function ShopView({ brands }: { brands: ShopBrand[] }) {
 
       {/* ── Шапка страницы ─────────────────────────────────── */}
       <section className="cap-shop-head">
-        <span style={PAGE_KICKER}>{t("Hookah shop", "Наши дистрибуции")}</span>
-        <h1 style={PAGE_TITLE}>{t("Tobacco and coal, delivered.", "Табак и угли, с доставкой.")}</h1>
-        <p style={{ margin: 0, maxWidth: "56ch", color: "#a89f96", lineHeight: 1.6, fontSize: 17 }}>
-          {t(
-            "What we keep on the shelf, now to take home. Delivery across Yerevan, payment on receipt.",
-            "То, что стоит у нас на полке, теперь можно забрать домой. Доставка по Еревану, оплата при получении.",
-          )}
-        </p>
+        <Txt k="pageKicker" style={PAGE_KICKER} />
+        <Txt k="pageTitle" as="h1" style={PAGE_TITLE} />
+        <Txt
+          k="pageBody"
+          as="p"
+          multiline
+          style={{ margin: 0, maxWidth: "56ch", color: "#a89f96", lineHeight: 1.6, fontSize: 17 }}
+        />
       </section>
 
       {brands.length === 0 ? (
         <section className="cap-shop-section" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <p style={{ color: "#a89f96", fontSize: 16, margin: 0 }}>
-            {t(
-              "The shop is being filled in. Call us and we will sort it out by phone.",
-              "Магазин пока наполняется. Позвоните — соберём заказ по телефону.",
-            )}
-          </p>
+          <Txt k="emptyShop" as="p" multiline style={{ color: "#a89f96", fontSize: 16, margin: 0 }} />
           <a
             href={`tel:${content.settings.phoneHref ?? ""}`}
             className="btn btn-primary"
@@ -104,8 +109,8 @@ export function ShopView({ brands }: { brands: ShopBrand[] }) {
             <div className="cap-shop-bar-inner">
             <div style={{ display: "flex", border: "2px solid #4a4038", flex: "0 0 auto" }}>
               {[
-                { key: "tobacco", label: t("Tobacco", "Табаки") },
-                { key: "coal", label: t("Coal", "Угли") },
+                { key: "tobacco", label: content.texts.catTobacco?.[lang] || "Табаки" },
+                { key: "coal", label: content.texts.catCoal?.[lang] || "Угли" },
               ].map((c) => (
                 <button
                   key={c.key}
@@ -126,13 +131,13 @@ export function ShopView({ brands }: { brands: ShopBrand[] }) {
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder={t("Search by flavour", "Поиск по вкусу")}
+              placeholder={content.texts.searchHint?.[lang] || ""}
               style={{ ...INPUT, maxWidth: 300, padding: "9px 12px" }}
             />
 
             {brand && !searching && (
               <button type="button" className="cap-shop-back" onClick={() => setOpenBrand(null)}>
-                ← {t("All brands", "Все бренды")}
+                ← {content.texts.backToBrands?.[lang] || "Все бренды"}
               </button>
             )}
             </div>
@@ -173,6 +178,16 @@ export function ShopView({ brands }: { brands: ShopBrand[] }) {
               <div className="cap-brand-grid">
                 {inCategory.map((b) => {
                   const range = priceRange(b);
+                  if (editing)
+                    return (
+                      <BrandCardEdit
+                        key={b.id}
+                        brand={b}
+                        countLabel={`${b.products.length} ${plural(b.products.length, lang, b.category)}`}
+                        onOpen={() => setOpenBrand(b.id)}
+                        save={save}
+                      />
+                    );
                   return (
                     <button
                       key={b.id}
@@ -194,7 +209,9 @@ export function ShopView({ brands }: { brands: ShopBrand[] }) {
                     </button>
                   );
                 })}
+                {editing && <AddBrand category={category} save={save} />}
               </div>
+              {editing && <HiddenBrands brands={brands} category={category} save={save} />}
             </section>
           )}
 
@@ -210,18 +227,35 @@ export function ShopView({ brands }: { brands: ShopBrand[] }) {
                   marginBottom: 24,
                 }}
               >
-                <h2 className="cap-shop-brand-title" style={{ margin: 0 }}>
-                  {brand.name}
-                </h2>
+                {editing ? (
+                  <Editable
+                    as="h2"
+                    value={brand.name}
+                    editing
+                    placeholder="бренд"
+                    className="cap-shop-brand-title"
+                    style={{ margin: 0 }}
+                    onSave={(next) => save(() => updateBrand(brand.id, { name: next }))}
+                  />
+                ) : (
+                  <h2 className="cap-shop-brand-title" style={{ margin: 0 }}>
+                    {brand.name}
+                  </h2>
+                )}
                 <span className="cap-shop-count" style={{ margin: 0 }}>
                   {brand.products.length} {plural(brand.products.length, lang, brand.category)}
                 </span>
               </div>
 
               <div className="cap-shop-grid">
-                {brand.products.map((p) => (
-                  <ProductCard key={p.id} product={p} lang={lang} onAdd={(v) => addLine(brand, p, v)} />
-                ))}
+                {brand.products.map((p) =>
+                  editing ? (
+                    <ProductCardEdit key={p.id} product={p} save={save} />
+                  ) : (
+                    <ProductCard key={p.id} product={p} lang={lang} onAdd={(v) => addLine(brand, p, v)} />
+                  ),
+                )}
+                {editing && <AddProduct brandId={brand.id} save={save} />}
               </div>
             </section>
           )}
