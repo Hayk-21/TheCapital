@@ -446,10 +446,32 @@ export async function createBooking(input: BookingInput) {
 
 export async function updateBooking(
   id: string,
-  data: { status?: string; adminNote?: string },
+  data: {
+    status?: string;
+    adminNote?: string;
+    date?: string;
+    time?: string;
+    guests?: number | null;
+    seating?: string;
+    name?: string;
+    phone?: string;
+  },
 ) {
   await requireSession();
-  await db.booking.update({ where: { id }, data });
+  await db.booking.update({
+    where: { id },
+    data: {
+      ...data,
+      // Пустое поле означает «не указано», а не пустую строку.
+      date: data.date === undefined ? undefined : data.date.trim() || null,
+      time: data.time === undefined ? undefined : data.time.trim() || null,
+      seating: data.seating === undefined ? undefined : data.seating.trim() || null,
+      name: data.name?.trim().slice(0, 120),
+      phone: data.phone?.trim().slice(0, 60),
+      guests:
+        data.guests === undefined ? undefined : Number.isFinite(data.guests) ? data.guests : null,
+    },
+  });
   revalidatePath("/admin/bookings");
 }
 
@@ -791,4 +813,80 @@ export async function moveCategory(key: string, dir: "up" | "down") {
   ]);
   revalidatePath("/admin/shop");
   await refresh();
+}
+
+/**
+ * Заказ, заведённый вручную в админке — например, принятый по телефону.
+ *
+ * От гостевого отличается тем, что цену доставки ставит сотрудник: он уже
+ * знает адрес и договорился с курьером.
+ */
+export async function createOrderByAdmin(input: {
+  kind: "delivery" | "pickup";
+  name: string;
+  phone: string;
+  address?: string;
+  comment?: string;
+  atTime?: string;
+  deliveryFee?: number;
+  lines: Array<{ variantId: string; qty: number; note?: string }>;
+}) {
+  await requireSession();
+
+  const name = input.name?.trim();
+  const phone = input.phone?.trim();
+  if (!name || !phone) throw new Error("Имя и телефон обязательны");
+
+  const wanted = input.lines.filter((l) => l.variantId && l.qty > 0).slice(0, 60);
+  if (wanted.length === 0) throw new Error("Нужна хотя бы одна позиция");
+
+  const variants = await db.productVariant.findMany({
+    where: { id: { in: wanted.map((l) => l.variantId) } },
+    include: { product: { include: { brand: true } } },
+  });
+  const byId = new Map(variants.map((v) => [v.id, v]));
+
+  const lines = wanted.flatMap((l) => {
+    const v = byId.get(l.variantId);
+    if (!v) return [];
+    const title = `${v.product.brand.name} · ${v.product.name}, ${v.size}`;
+    return [
+      {
+        variantId: v.id,
+        titleEn: title,
+        titleRu: title,
+        price: v.price,
+        qty: Math.min(Math.floor(l.qty), 50),
+        note: l.note?.slice(0, 300) || null,
+      },
+    ];
+  });
+  if (lines.length === 0) throw new Error("Этих позиций больше нет");
+
+  const itemsTotal = lines.reduce((sum, l) => sum + l.price * l.qty, 0);
+  const deliveryFee = input.kind === "delivery" ? Math.max(0, Math.round(input.deliveryFee ?? 0)) : 0;
+
+  const last = await db.order.findFirst({ orderBy: { number: "desc" }, select: { number: true } });
+
+  const order = await db.order.create({
+    data: {
+      number: (last?.number ?? 0) + 1,
+      kind: input.kind,
+      name: name.slice(0, 120),
+      phone: phone.slice(0, 60),
+      address: input.kind === "delivery" ? input.address?.slice(0, 300) || null : null,
+      comment: input.comment?.slice(0, 1000) || null,
+      atTime: input.atTime?.slice(0, 60) || null,
+      itemsTotal,
+      deliveryFee,
+      total: itemsTotal + deliveryFee,
+      lang: "ru",
+      status: "confirmed", // заказ принят сотрудником, подтверждать нечего
+      items: { create: lines },
+    },
+    select: { number: true },
+  });
+
+  revalidatePath("/admin/orders");
+  return order.number;
 }

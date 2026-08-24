@@ -39,6 +39,83 @@ function formatDate(iso: string) {
   });
 }
 
+/** Дата, время и число гостей правятся на месте: часто переносят по телефону. */
+function WhenCell({
+  booking,
+  run,
+}: {
+  booking: BookingRow;
+  run: (fn: () => void) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [date, setDate] = useState(booking.date ?? "");
+  const [time, setTime] = useState(booking.time ?? "");
+  const [guests, setGuests] = useState(booking.guests ? String(booking.guests) : "");
+
+  if (!open)
+    return (
+      <td style={{ whiteSpace: "nowrap" }}>
+        <button type="button" className="adm-linkish" onClick={() => setOpen(true)} title="Изменить">
+          {booking.date || "—"}
+          {booking.time ? `, ${booking.time}` : ""}
+        </button>
+        <div className="adm-hint">{booking.guests ? `${booking.guests} гостей` : ""}</div>
+      </td>
+    );
+
+  return (
+    <td>
+      <form
+        style={{ display: "flex", flexDirection: "column", gap: 6, minWidth: 190 }}
+        onSubmit={(e) => {
+          e.preventDefault();
+          run(async () => {
+            await updateBooking(booking.id, {
+              date,
+              time,
+              guests: guests.trim() === "" ? null : Number.parseInt(guests, 10),
+            });
+            setOpen(false);
+          });
+        }}
+      >
+        <input
+          className="adm-input"
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+        />
+        <input
+          className="adm-input"
+          type="time"
+          value={time}
+          onChange={(e) => setTime(e.target.value)}
+        />
+        <input
+          className="adm-input"
+          inputMode="numeric"
+          placeholder="гостей"
+          value={guests}
+          onChange={(e) => setGuests(e.target.value)}
+        />
+        <div style={{ display: "flex", gap: 6 }}>
+          <button type="submit" className="adm-btn">
+            Сохранить
+          </button>
+          <button
+            type="button"
+            className="adm-btn"
+            data-variant="ghost"
+            onClick={() => setOpen(false)}
+          >
+            Отмена
+          </button>
+        </div>
+      </form>
+    </td>
+  );
+}
+
 export function BookingsTable({ bookings }: { bookings: BookingRow[] }) {
   const [filter, setFilter] = useState("all");
   const [pending, startTransition] = useTransition();
@@ -92,11 +169,7 @@ export function BookingsTable({ bookings }: { bookings: BookingRow[] }) {
                     {b.phone}
                   </a>
                 </td>
-                <td style={{ whiteSpace: "nowrap" }}>
-                  {b.date || "—"}
-                  {b.time ? `, ${b.time}` : ""}
-                  <div className="adm-hint">{b.guests ? `${b.guests} гостей` : ""}</div>
-                </td>
+                <WhenCell booking={b} run={startTransition} />
                 <td style={{ maxWidth: 260 }}>
                   {b.seating && <div>{b.seating}</div>}
                   {b.note && <div className="adm-hint">{b.note}</div>}

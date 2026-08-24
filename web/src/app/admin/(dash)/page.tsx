@@ -78,8 +78,10 @@ export default async function AdminHome() {
             <div style={{ fontFamily: "var(--font-heading)", fontWeight: 800, fontSize: 18 }}>
               {page.title}
             </div>
-            <div className="adm-hint">{page.hint}</div>
-            <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+            <div className="adm-hint" style={{ flex: 1 }}>
+              {page.hint}
+            </div>
+            <div className="adm-card-actions">
               <Link
                 href={`/ru${page.path}?edit=1`}
                 target="_blank"

@@ -472,15 +472,26 @@ a:hover { color: #f4f1ee; }
 .adm-card {
   border: 2px solid #2c2521;
   background: #1c1714;
-  padding: 20px;
+  padding: 22px;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 .adm-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  /* Карточки одной высоты: иначе ряд «прыгает» из-за подписей разной длины. */
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  align-items: stretch;
   gap: 16px;
+  margin-bottom: 32px;
+}
+/* Ряд кнопок в карточке прижат к низу — тогда карточки читаются как один ряд. */
+.adm-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 4px;
+  flex-wrap: wrap;
 }
 
 .adm-label {
@@ -508,12 +519,21 @@ textarea.adm-input { min-height: 80px; resize: vertical; }
   font: inherit;
   font-size: 13px;
   font-weight: 600;
-  padding: 10px 16px;
+  line-height: 1.2;
+  padding: 9px 14px;
   border: 2px solid #ec3013;
   background: #ec3013;
   color: #fff;
   cursor: pointer;
+  /* Подпись в одну строку: перенос ломал высоту кнопок в ряду. */
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
+/* Мелкая кнопка для плотных таблиц. */
+.adm-btn[data-size="s"] { font-size: 12px; padding: 6px 10px; }
 .adm-btn:hover { background: #c9280f; border-color: #c9280f; }
 .adm-btn[data-variant="ghost"] {
   background: transparent;
@@ -537,8 +557,11 @@ textarea.adm-input { min-height: 80px; resize: vertical; }
 .adm-table td {
   padding: 12px;
   border-bottom: 1px solid #241f1b;
-  vertical-align: top;
+  vertical-align: middle;
 }
+/* Ячейки с кнопками не растягиваются: колонки перестают «плясать». */
+.adm-table td[data-tight] { width: 1%; white-space: nowrap; }
+.adm-table td > form { margin: 0; }
 .adm-table tbody tr:hover { background: #1c1714; }
 
 .adm-pill {

@@ -6,6 +6,7 @@ import { logoutAction } from "@/lib/admin-actions";
 
 const LINKS = [
   { href: "/admin", label: "Обзор" },
+  { href: "/admin/stats", label: "Статистика" },
   { href: "/admin/shop", label: "Магазин" },
   { href: "/admin/orders", label: "Заказы" },
   { href: "/admin/bookings", label: "Заявки на бронь" },

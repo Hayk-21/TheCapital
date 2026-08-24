@@ -119,26 +119,27 @@ export function BrandsTable({
                       </button>
                     </form>
                   ) : (
-                    <div style={{ display: "flex", gap: 10, alignItems: "baseline" }}>
+                    <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
                       <Link href={`/admin/shop/${b.id}`} style={{ fontWeight: 600 }}>
                         {b.name}
                       </Link>
                       <button
                         type="button"
-                        className="adm-btn"
-                        data-variant="ghost"
+                        className="adm-linkish"
+                        style={{ fontSize: 12, color: "#8e857c" }}
+                        title="Переименовать"
                         onClick={() => {
                           setEditing(b.id);
                           setDraft(b.name);
                         }}
                       >
-                        переименовать
+                        ✎
                       </button>
                     </div>
                   )}
                 </td>
 
-                <td style={{ whiteSpace: "nowrap" }}>
+                <td data-tight>
                   {b.products}
                   <div className="adm-hint">
                     {b.variants} фасовок
@@ -146,10 +147,11 @@ export function BrandsTable({
                   </div>
                 </td>
 
-                <td>
+                <td data-tight>
                   <button
                     type="button"
                     className="adm-btn"
+                    data-size="s"
                     data-variant={b.visible ? undefined : "ghost"}
                     onClick={() => run(() => updateBrand(b.id, { visible: !b.visible }))}
                   >
@@ -157,10 +159,11 @@ export function BrandsTable({
                   </button>
                 </td>
 
-                <td style={{ whiteSpace: "nowrap" }}>
+                <td data-tight>
                   <button
                     type="button"
                     className="adm-btn"
+                    data-size="s"
                     data-variant="ghost"
                     title="Выше"
                     onClick={() => run(() => moveBrand(b.id, "up"))}
@@ -170,6 +173,7 @@ export function BrandsTable({
                   <button
                     type="button"
                     className="adm-btn"
+                    data-size="s"
                     data-variant="ghost"
                     title="Ниже"
                     onClick={() => run(() => moveBrand(b.id, "down"))}
@@ -178,13 +182,19 @@ export function BrandsTable({
                   </button>
                 </td>
 
-                <td style={{ whiteSpace: "nowrap" }}>
-                  <Link href={`/admin/shop/${b.id}`} className="adm-btn" data-variant="ghost">
+                <td data-tight>
+                  <Link
+                    href={`/admin/shop/${b.id}`}
+                    className="adm-btn"
+                    data-size="s"
+                    data-variant="ghost"
+                  >
                     Позиции →
                   </Link>{" "}
                   <button
                     type="button"
                     className="adm-btn"
+                    data-size="s"
                     data-variant="ghost"
                     onClick={() => {
                       if (
