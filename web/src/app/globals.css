@@ -941,3 +941,98 @@ textarea.adm-input { min-height: 80px; resize: vertical; }
   align-items: start;
   gap: 16px;
 }
+
+/* ─────────────────────────────────────────────────────────────
+   Движение
+   Правило простое: анимируем то, что подтверждает действие
+   (наведение, появление), и не двигаем то, что человек читает.
+   ───────────────────────────────────────────────────────────── */
+
+/* Базовая плавность ссылок и кнопок: без неё цвет меняется рывком. */
+a,
+.btn,
+.cap-outline-btn,
+.cap-ghost-btn,
+.cap-poster-btn {
+  transition:
+    color 0.18s ease,
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s cubic-bezier(0.2, 0.75, 0.25, 1);
+}
+.btn:active { transform: translateY(1px); }
+
+/* Пункты шапки: линия растёт от левого края, а не мигает целиком. */
+header nav a {
+  position: relative;
+}
+header nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.22s cubic-bezier(0.2, 0.75, 0.25, 1);
+}
+header nav a:hover::after { transform: scaleX(1); }
+
+/* Фото внутри карточки чуть приближается — карточка отзывается целиком. */
+.cap-card .cap-slot img {
+  transition: transform 0.5s cubic-bezier(0.2, 0.75, 0.25, 1);
+}
+.cap-card:hover .cap-slot img {
+  transform: scale(1.04);
+}
+
+/* Товар и бренд приподнимаются на пиксель: достаточно, чтобы заметить. */
+.cap-product { transition: background 0.15s ease, transform 0.18s cubic-bezier(0.2, 0.75, 0.25, 1); }
+.cap-product:hover { transform: translateY(-2px); }
+.cap-brand-card:hover { transform: translateY(-3px); }
+
+/* Появление плитки: разбег по позиции, но короткий — сетка не должна
+   «сыпаться» на глазах, только мягко проявиться. */
+.cap-brand-grid > *,
+.cap-shop-grid > * {
+  animation: capUp 0.45s cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+.cap-brand-grid > *:nth-child(1),
+.cap-shop-grid > *:nth-child(1) { animation-delay: 0.02s; }
+.cap-brand-grid > *:nth-child(2),
+.cap-shop-grid > *:nth-child(2) { animation-delay: 0.04s; }
+.cap-brand-grid > *:nth-child(3),
+.cap-shop-grid > *:nth-child(3) { animation-delay: 0.06s; }
+.cap-brand-grid > *:nth-child(4),
+.cap-shop-grid > *:nth-child(4) { animation-delay: 0.08s; }
+.cap-brand-grid > *:nth-child(n + 5),
+.cap-shop-grid > *:nth-child(n + 5) { animation-delay: 0.1s; }
+
+/* Кнопка заказа под курсором чуть подрастает. */
+.cap-cart-btn { transition: filter 0.15s ease, transform 0.15s cubic-bezier(0.2, 0.75, 0.25, 1); }
+.cap-cart-btn:hover { transform: scale(1.08); }
+
+/* Плавающая корзина: мягкая тень вместо резкого прыжка. */
+.cap-cart-fab {
+  transition:
+    filter 0.18s ease,
+    transform 0.22s cubic-bezier(0.2, 0.75, 0.25, 1),
+    box-shadow 0.22s ease;
+}
+.cap-cart-fab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55);
+}
+
+/* Кому движение мешает — не двигаем ничего: и анимации, и переходы. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
