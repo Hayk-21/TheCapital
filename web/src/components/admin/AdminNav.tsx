@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logoutAction } from "@/lib/admin-actions";
+import { NavBadge } from "./NewWork";
 
 const LINKS = [
   { href: "/admin", label: "Обзор" },
@@ -14,7 +15,15 @@ const LINKS = [
   { href: "/admin/settings", label: "Настройки" },
 ];
 
-export function AdminNav({ name, role }: { name: string; role: string }) {
+export function AdminNav({
+  name,
+  role,
+  counts,
+}: {
+  name: string;
+  role: string;
+  counts: { orders: number; bookings: number };
+}) {
   const pathname = usePathname() ?? "";
 
   return (
@@ -31,6 +40,8 @@ export function AdminNav({ name, role }: { name: string; role: string }) {
           }
         >
           {link.label}
+          {link.href === "/admin/orders" && <NavBadge count={counts.orders} />}
+          {link.href === "/admin/bookings" && <NavBadge count={counts.bookings} />}
         </Link>
       ))}
 

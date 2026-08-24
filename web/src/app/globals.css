@@ -885,3 +885,44 @@ textarea.adm-input { min-height: 80px; resize: vertical; }
   border-bottom: 1px dashed rgba(255, 255, 255, 0.25);
 }
 .adm-linkish:hover { border-bottom-color: currentColor; }
+
+/* ── Уведомление о новой работе ──────────────────────────────── */
+
+/* Счётчик у пункта меню: сколько заказов или заявок ждут ответа. */
+.adm-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  margin-left: 8px;
+  background: #ec3013;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 10px;
+  vertical-align: middle;
+}
+
+/* Плашка о новом заказе: поверх всего, чтобы заметили из зала. */
+.adm-flash {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: #ec3013;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  animation: capUp 0.35s cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+.adm-flash .adm-btn {
+  background: #100d0b;
+  border-color: #100d0b;
+}
+.adm-flash .adm-btn:hover { background: #000; border-color: #000; }
