@@ -32,7 +32,7 @@ const SETTINGS: Record<string, string> = {
   instagram: "https://instagram.com",
   telegram: "https://t.me",
   whatsapp: "https://wa.me/37491282820",
-  mapQuery: "31 Mesrop Mashtots Ave, Yerevan, Armenia",
+  mapQuery: "27 Mesrop Mashtots Ave, Yerevan, Armenia",
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -52,9 +52,9 @@ const NAV: Array<{ href: string; label: Pair }> = [
 
 const TEXTS: Record<string, Record<string, Pair | [...Pair, "multiline"]>> = {
   common: {
-    addressLine1: ["31 Mesrop Mashtots Ave", "Пр. Маштоца, 31"],
+    addressLine1: ["27 Mesrop Mashtots Ave", "Пр. Маштоца, 27"],
     addressLine2: ["Yerevan 0002, Armenia", "Ереван 0002, Армения"],
-    addressShort: ["31 Mesrop Mashtots Ave, Yerevan 0002", "Пр. Маштоца, 31, Ереван 0002"],
+    addressShort: ["27 Mesrop Mashtots Ave, Yerevan 0002", "Пр. Маштоца, 27, Ереван 0002"],
   },
   home: {
     seoTitle: [
