@@ -46,6 +46,10 @@ npm-debug.log*
 .idea/
 
 # ── Временное ────────────────────────────────────────────────
+# Инкрементальный кеш TypeScript. В репозитории он не нужен, а на
+# Railway ломает сборку: buildkit монтирует туда кеш-директорию,
+# а натыкается на файл — «not a directory».
+tsconfig.tsbuildinfo
 *.tmp
 *.tmp.*
 next-env.d.ts
