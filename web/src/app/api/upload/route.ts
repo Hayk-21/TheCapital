@@ -1,7 +1,4 @@
 import { NextResponse } from "next/server";
-import { mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
-import { randomUUID } from "node:crypto";
 import sharp from "sharp";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
@@ -10,11 +7,10 @@ const MAX_BYTES = 12 * 1024 * 1024; // 12 МБ до обработки
 const MAX_DIMENSION = 2400; // больше на сайте всё равно не показывается
 
 /**
- * Приём картинки из редактора: жмём в webp, кладём в public/uploads
- * и заводим запись Media.
+ * Приём картинки из редактора: жмём в webp и кладём в базу.
  *
- * При переезде в облако меняется только этот файл: вместо writeFile —
- * загрузка в хранилище, а в базу пишется его URL.
+ * Не на диск: контейнер на хостинге пересоздаётся при каждом деплое, и всё
+ * загруженное пропадало бы. Отдаёт файлы обратно /api/media/<id>.
  */
 export async function POST(request: Request) {
   const session = await getSession();
@@ -64,30 +60,31 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Повреждённый файл" }, { status: 422 });
   }
 
-  const now = new Date();
-  const folder = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, "0")}`;
-  const filename = `${randomUUID()}.webp`;
-  const relative = `/uploads/${folder}/${filename}`;
-  const absolute = path.join(process.cwd(), "public", "uploads", folder, filename);
-
-  await mkdir(path.dirname(absolute), { recursive: true });
-  await writeFile(absolute, output);
-
   const media = await db.media.create({
     data: {
-      path: relative,
+      // Адрес отдачи известен только после создания записи, поэтому
+      // сначала заводим её с заглушкой, следом проставляем настоящий путь.
+      path: "",
       filename: file.name.slice(0, 200),
       mimeType: "image/webp",
       width,
       height,
       size: output.byteLength,
+      data: new Uint8Array(output),
     },
+    select: { id: true, width: true, height: true },
+  });
+
+  const updated = await db.media.update({
+    where: { id: media.id },
+    data: { path: `/api/media/${media.id}` },
+    select: { id: true, path: true, width: true, height: true },
   });
 
   return NextResponse.json({
-    id: media.id,
-    path: media.path,
-    width: media.width,
-    height: media.height,
+    id: updated.id,
+    path: updated.path,
+    width: updated.width,
+    height: updated.height,
   });
 }
