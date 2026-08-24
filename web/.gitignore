@@ -1,0 +1,23 @@
+node_modules
+.next
+out
+
+# Переменные окружения — в репозиторий не попадают, см. .env.example
+.env
+.env.local
+
+# Клиент Prisma генерируется командой prisma generate
+/src/generated/prisma
+
+# Локальная база
+*.db
+*.db-journal
+prisma/*.db
+
+# Загруженные через админку картинки — это контент, а не код
+/public/uploads/*
+!/public/uploads/.gitkeep
+
+# Временные файлы
+*.tmp.*
+next-env.d.ts

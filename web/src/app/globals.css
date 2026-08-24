@@ -1,0 +1,864 @@
+/* ─────────────────────────────────────────────────────────────
+   The Capital — глобальные стили.
+
+   Первый блок — токены и классы дизайн-системы Modernist, перенесённые
+   из _ds/modernist-…/styles.css один в один. Второй (в конце файла) —
+   то, что было в <helmet> исходных .dc.html страниц.
+   Шрифт Archivo подключается через next/font в layout.tsx.
+   ───────────────────────────────────────────────────────────── */
+
+
+:root {
+  --color-bg: #f3f2f2;
+  --color-surface: #eae9e9;
+  --color-text: #201e1d;
+  --color-accent: #ec3013;
+  --color-accent-2: #e15b47;
+  --color-divider: color-mix(in srgb, #201e1d 40%, transparent);
+
+  /* Tonal ramps — generated in OKLCH on one shared lightness scale, so the
+     same step of any role matches the others in visual value. */
+  --color-neutral-100: #f8f4f4;
+  --color-neutral-200: #eae7e7;
+  --color-neutral-300: #d7d3d3;
+  --color-neutral-400: #bab6b6;
+  --color-neutral-500: #9b9797;
+  --color-neutral-600: #7d7979;
+  --color-neutral-700: #605d5d;
+  --color-neutral-800: #444141;
+  --color-neutral-900: #2d2b2b;
+
+  --color-accent-100: #fff2ef;
+  --color-accent-200: #ffe0d9;
+  --color-accent-300: #ffc4b8;
+  --color-accent-400: #ff9783;
+  --color-accent-500: #ff563c;
+  --color-accent-600: #dd2b0f;
+  --color-accent-700: #ae1800;
+  --color-accent-800: #7c1405;
+  --color-accent-900: #4d170e;
+
+  --color-accent-2-100: #fff2ef;
+  --color-accent-2-200: #ffe0da;
+  --color-accent-2-300: #ffc4b9;
+  --color-accent-2-400: #ff9784;
+  --color-accent-2-500: #ef6853;
+  --color-accent-2-600: #c94b39;
+  --color-accent-2-700: #9e3526;
+  --color-accent-2-800: #71261b;
+  --color-accent-2-900: #471d16;
+
+  --font-heading: var(--font-archivo), "Archivo", system-ui, sans-serif;
+  --font-heading-weight: 800;
+  --font-body: var(--font-archivo), "Archivo", system-ui, sans-serif;
+
+  --space-1: 4.0px;
+  --space-2: 8.0px;
+  --space-3: 12.0px;
+  --space-4: 16.0px;
+  --space-6: 24.0px;
+  --space-8: 32.0px;
+
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+
+  /* Elevation — derived from the ground: soft ink-tinted shadows on a
+     light theme, a hairline edge + ambient darkness on a dark one. */
+  --shadow-sm: 0 1px 2px color-mix(in srgb, #2d2b2b 14%, transparent);
+  --shadow-md: 0 3px 10px color-mix(in srgb, #2d2b2b 16%, transparent);
+  --shadow-lg: 0 12px 32px color-mix(in srgb, #2d2b2b 22%, transparent);
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: var(--font-heading-weight); }
+
+.grayscale{filter:grayscale(1) contrast(1.08)}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Components — built with the tokens above. Plain CSS
+   on plain HTML: no JavaScript, no build step. Each class is documented in
+   readme.md and demonstrated in foundations/ and components/.
+   ══════════════════════════════════════════════════════════════════════ */
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; font-size: 15px; line-height: 1.55; font-weight: 400; }
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  line-height: 1.12; letter-spacing: -0.015em; margin: 0 0 var(--space-2);
+}
+h1 { font-size: 42px; }
+h2 { font-size: 32px; }
+h3 { font-size: 25px; }
+h4 { font-size: 20px; }
+h5 { font-size: 16px; }
+h6 { font-size: 13px; }
+h6 { letter-spacing: 0.08em; text-transform: uppercase; }
+p { margin: 0 0 var(--space-3); }
+a { color: var(--color-accent); text-underline-offset: 3px; }
+img { display: block; max-width: 100%; }
+figure { margin: 0; }
+figcaption {
+  font-size: 11px; margin-top: var(--space-1);
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+.text-muted { color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+::selection { background: color-mix(in srgb, var(--color-accent) 30%, transparent); }
+
+/* — rules — */
+.hr {
+  height: 2px; border: 0; margin: var(--space-4) 0;
+  background: var(--color-divider);
+}
+
+/* — buttons — */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  cursor: pointer; text-decoration: none;
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 14px; line-height: 1.2; color: var(--color-text); /* matches the .input's 14px —
+     the pair sits side by side in sign-up rows */
+  background: transparent; border: 1px solid transparent;
+  padding: var(--space-2) calc(var(--space-3) * 1.2);
+  border-radius: var(--radius-md);
+}
+.btn svg { display: block; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-primary { background: var(--color-accent); color: var(--color-bg); }
+.btn-primary:hover { background: var(--color-accent-600); }
+.btn-primary:active { background: var(--color-accent-700); }
+.btn-secondary { border-color: var(--color-divider); }
+.btn-secondary:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+.btn-secondary:active { background: color-mix(in srgb, var(--color-text) 14%, transparent); }
+.btn-ghost { color: var(--color-accent); padding-inline: var(--space-1); }
+.btn-ghost:hover { background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
+.btn-ghost:active { background: color-mix(in srgb, var(--color-accent) 18%, transparent); }
+.btn-icon { width: 36px; height: 36px; padding: 0; }
+.btn-block { width: 100%; margin-top: var(--space-2); justify-content: flex-start; text-align: left; }
+
+/* — forms — */
+.field > label {
+  display: block; font-size: 12px; margin-bottom: 5px;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+}
+.input {
+  width: 100%; min-height: 36px; padding: 6px 10px; font: inherit;
+  font-size: 14px; color: var(--color-text); caret-color: var(--color-accent);
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider); border-radius: var(--radius-md);
+}
+.input:hover { border-color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+.input:focus-visible { border-color: var(--color-accent); outline-offset: 0; }
+textarea.input { min-height: 90px; resize: vertical; }
+.radio { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; }
+.radio input, .seg-opt input {
+  position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none;
+}
+.radio .dot {
+  width: 16px; height: 16px; flex: none; border-radius: 50%;
+  border: 1.5px solid var(--color-divider);
+}
+.radio:hover .dot { border-color: var(--color-accent); }
+.radio input:checked + .dot {
+  border-color: var(--color-accent); background: var(--color-accent);
+  box-shadow: inset 0 0 0 4px var(--color-bg);
+}
+.radio input:focus-visible + .dot { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.seg {
+  display: inline-flex; overflow: hidden;
+  border: 1px solid var(--color-divider); border-radius: var(--radius-md);
+}
+.seg-opt {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 12px; font-size: 13px; cursor: pointer;
+}
+.seg-opt + .seg-opt { border-left: 1px solid var(--color-divider); }
+.seg-opt:has(input:checked) { background: var(--color-accent); color: var(--color-bg); }
+.seg-opt:not(:has(input:checked)):hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+.seg-opt:has(input:focus-visible) { outline: 2px solid var(--color-accent); outline-offset: -2px; }
+
+/* — cards — */
+.card {
+  display: flex; flex-direction: column; gap: var(--space-2);
+  padding: var(--space-3); border-radius: var(--radius-md); background: var(--color-surface);
+}
+.card-kicker { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent); }
+.card-title {
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 17px; line-height: 1.2;
+}
+.card-body { margin: 0; font-size: 13px; opacity: 0.8; flex: 1; }
+.card-meta {
+  display: flex; align-items: center; gap: 6px; font-size: 11px;
+  color: color-mix(in srgb, var(--color-text) 50%, transparent);
+}
+.elev-sm { box-shadow: var(--shadow-sm); }
+.elev-md { box-shadow: var(--shadow-md); }
+.elev-lg { box-shadow: var(--shadow-lg); }
+
+/* — tags — */
+.tag {
+  display: inline-flex; align-items: center; font-size: 11px;
+  letter-spacing: 0.02em; padding: 3px 10px;
+  border-radius: calc(var(--radius-md) * 0.75);
+}
+.tag-accent { background: var(--color-accent-100); color: var(--color-accent-800); }
+.tag-accent-2 { background: var(--color-accent-2-100); color: var(--color-accent-2-800); }
+.tag-neutral { background: var(--color-neutral-100); color: var(--color-neutral-800); }
+.tag-outline { border: 1px solid var(--color-accent); color: var(--color-accent); }
+
+/* — navigation — */
+.nav {
+  display: flex; align-items: center; gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 2px solid var(--color-divider);
+}
+.nav-brand {
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 18px; margin-right: auto;
+}
+.nav a { color: inherit; text-decoration: none; font-size: 14px; }
+.nav a:hover, .nav a[aria-current='page'] { color: var(--color-accent); }
+
+/* — tables — */
+.table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.table th {
+  text-align: left; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  padding: var(--space-2); border-bottom: 2px solid var(--color-divider);
+}
+.table td {
+  padding: var(--space-2);
+  border-bottom: 1px solid var(--color-divider);
+}
+.table tbody tr:hover { background: color-mix(in srgb, var(--color-text) 4%, transparent); }
+
+/* — dialog — */
+.dialog-backdrop {
+  position: fixed; inset: 0; display: grid; place-items: center;
+  padding: var(--space-4);
+  background: color-mix(in srgb, var(--color-neutral-900) 50%, transparent);
+}
+.dialog {
+  width: min(440px, 100%); display: flex; flex-direction: column; gap: var(--space-3);
+  padding: var(--space-4); border-radius: var(--radius-lg);
+  background: var(--color-surface); box-shadow: var(--shadow-lg);
+}
+.dialog-title {
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 20px;
+}
+.dialog-body { font-size: 14px; opacity: 0.85; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-2); }
+
+
+/* ─────────────────────────────────────────────────────────────
+   Сайт The Capital — то, что было в <helmet> исходных страниц
+   ───────────────────────────────────────────────────────────── */
+
+body {
+  margin: 0;
+  background: #1a1613;
+  color: #f4f1ee;
+}
+a { color: #ec3013; text-decoration: none; }
+a:hover { color: #f4f1ee; }
+::placeholder { color: #7d746b; }
+
+@keyframes capUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes capDrift {
+  0%   { transform: translate3d(-8%, 6%, 0) scale(1);   opacity: 0.35; }
+  100% { transform: translate3d(10%, -8%, 0) scale(1.3); opacity: 0.75; }
+}
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+
+/* Наведение, которое в .dc.html задавалось атрибутом style-hover */
+.cap-outline-btn:hover { border-color: #ec3013 !important; color: #ec3013 !important; }
+.cap-ghost-btn:hover { color: #f4f1ee !important; }
+.cap-poster-btn:hover { background: #f4f1ee !important; color: #100d0b !important; }
+.cap-card:hover { transform: translateY(-6px); border-color: #ec3013; }
+.cap-input:focus { border-color: #ec3013; outline: none; }
+
+/* Появление секций при прокрутке */
+.cap-reveal {
+  animation: capUp linear both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 55%;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Режим редактирования
+   ───────────────────────────────────────────────────────────── */
+
+/* Подсветка редактируемого текста прямо на странице */
+[data-editable] {
+  outline: 1px dashed rgba(236, 48, 19, 0.45);
+  outline-offset: 3px;
+  border-radius: 2px;
+  transition: outline-color 0.15s ease, background-color 0.15s ease;
+  cursor: text;
+}
+[data-editable]:hover {
+  outline-color: #ec3013;
+  background: rgba(236, 48, 19, 0.08);
+}
+[data-editable]:focus {
+  outline: 2px solid #ec3013;
+  background: rgba(236, 48, 19, 0.1);
+}
+[data-editable][data-empty="true"]::after {
+  content: attr(data-placeholder);
+  opacity: 0.45;
+  font-style: italic;
+}
+[data-dirty="true"] { outline-color: #f0b429 !important; }
+
+/* Обёртка вокруг блока, у которого есть свои действия */
+.cap-editable-block { position: relative; }
+.cap-editable-block > .cap-block-tools {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 20;
+  display: none;
+  gap: 4px;
+}
+.cap-editable-block:hover > .cap-block-tools { display: flex; }
+
+.cap-tool-btn {
+  font-family: var(--font-body);
+  font-size: 11px;
+  line-height: 1;
+  padding: 6px 8px;
+  border: 1px solid #4a4038;
+  background: #100d0b;
+  color: #f4f1ee;
+  cursor: pointer;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+.cap-tool-btn:hover { border-color: #ec3013; color: #ec3013; }
+.cap-tool-btn[data-danger="true"]:hover { border-color: #ec3013; background: #ec3013; color: #fff; }
+
+/* Плавающая панель редактора */
+.cap-editor-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #100d0b;
+  border: 2px solid #ec3013;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #f4f1ee;
+}
+.cap-editor-bar a { color: #f4f1ee; }
+.cap-editor-bar a:hover { color: #ec3013; }
+
+/* Оверлей загрузки картинки в слот */
+.cap-slot {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.cap-slot img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.cap-slot-empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #6c635b;
+  background:
+    repeating-linear-gradient(45deg, #211c18 0 12px, #1d1815 12px 24px);
+}
+.cap-slot-drop {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  border: 2px dashed rgba(236, 48, 19, 0.6);
+  background: rgba(16, 13, 11, 0.55);
+  color: #f4f1ee;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  cursor: pointer;
+}
+.cap-slot-wrap:hover .cap-slot-drop,
+.cap-slot-drop[data-active="true"] { opacity: 1; }
+
+/* ─────────────────────────────────────────────────────────────
+   Админка
+   ───────────────────────────────────────────────────────────── */
+
+.adm {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  background: #16120f;
+  color: #f4f1ee;
+}
+@media (max-width: 860px) {
+  .adm { grid-template-columns: 1fr; }
+}
+
+.adm-side {
+  border-right: 2px solid #2c2521;
+  background: #100d0b;
+  padding: 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.adm-brand {
+  padding: 0 20px 20px;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 15px;
+}
+.adm-nav-link {
+  padding: 10px 20px;
+  font-size: 13px;
+  color: #b9b0a7;
+  border-left: 3px solid transparent;
+}
+.adm-nav-link:hover { color: #f4f1ee; background: #17130f; }
+.adm-nav-link[data-active="true"] {
+  color: #f4f1ee;
+  border-left-color: #ec3013;
+  background: #17130f;
+}
+
+.adm-main { padding: 32px 36px 64px; max-width: 1100px; }
+.adm-title {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 26px;
+  margin: 0 0 6px;
+  letter-spacing: -0.01em;
+}
+.adm-sub { color: #8e857c; font-size: 14px; margin: 0 0 28px; }
+
+.adm-card {
+  border: 2px solid #2c2521;
+  background: #1c1714;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.adm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.adm-label {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #8e857c;
+  display: block;
+  margin-bottom: 6px;
+}
+.adm-input {
+  width: 100%;
+  font: inherit;
+  font-size: 14px;
+  color: #f4f1ee;
+  background: #100d0b;
+  border: 2px solid #3b332c;
+  padding: 10px 12px;
+  box-sizing: border-box;
+}
+.adm-input:focus { border-color: #ec3013; outline: none; }
+textarea.adm-input { min-height: 80px; resize: vertical; }
+
+.adm-btn {
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 16px;
+  border: 2px solid #ec3013;
+  background: #ec3013;
+  color: #fff;
+  cursor: pointer;
+}
+.adm-btn:hover { background: #c9280f; border-color: #c9280f; }
+.adm-btn[data-variant="ghost"] {
+  background: transparent;
+  border-color: #3b332c;
+  color: #f4f1ee;
+}
+.adm-btn[data-variant="ghost"]:hover { border-color: #ec3013; color: #ec3013; }
+.adm-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.adm-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.adm-table th {
+  text-align: left;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8e857c;
+  padding: 10px 12px;
+  border-bottom: 2px solid #2c2521;
+  white-space: nowrap;
+}
+.adm-table td {
+  padding: 12px;
+  border-bottom: 1px solid #241f1b;
+  vertical-align: top;
+}
+.adm-table tbody tr:hover { background: #1c1714; }
+
+.adm-pill {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border: 1px solid currentColor;
+}
+.adm-pill[data-status="new"] { color: #f0b429; }
+.adm-pill[data-status="confirmed"] { color: #5fbf6b; }
+.adm-pill[data-status="declined"] { color: #ec3013; }
+.adm-pill[data-status="done"] { color: #8e857c; }
+
+.adm-error { color: #ec3013; font-size: 13px; }
+.adm-ok { color: #5fbf6b; font-size: 13px; }
+.adm-hint { color: #8e857c; font-size: 12px; }
+
+.adm-media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+.adm-media-item {
+  border: 2px solid #2c2521;
+  background: #100d0b;
+  display: flex;
+  flex-direction: column;
+}
+.adm-media-item img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  display: block;
+}
+
+/* Экран входа */
+.adm-login {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: #16120f;
+  padding: 24px;
+}
+.adm-login-box {
+  width: min(380px, 100%);
+  border: 2px solid #ec3013;
+  background: #1c1714;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Заказ: кнопки и плавающая корзина ──────────────────────── */
+
+.cap-cart-btn {
+  font: inherit;
+  font-size: 15px;
+  line-height: 1;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: #fff;
+  background: var(--color-accent);
+  border: none;
+  transition: filter .15s ease;
+}
+.cap-cart-btn:hover { filter: brightness(1.12); }
+.cap-cart-btn[data-quiet="true"] {
+  background: transparent;
+  color: #b9b0a7;
+  border: 1px solid #4a4038;
+}
+.cap-cart-btn[data-quiet="true"]:hover { color: #f4f1ee; border-color: #7d746b; }
+
+.cap-cart-fab {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: var(--color-accent);
+  color: #fff;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  animation: capUp .4s cubic-bezier(.2,.75,.25,1) both;
+}
+.cap-cart-fab:hover { color: #fff; filter: brightness(1.1); }
+.cap-cart-fab-count {
+  display: grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  background: #100d0b;
+  font-size: 12px;
+  letter-spacing: 0;
+}
+.cap-cart-fab-total { font-family: var(--font-heading); font-weight: 700; letter-spacing: 0; }
+
+/* ── Магазин ─────────────────────────────────────────────────── */
+
+.cap-shop-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 20px 40px;
+  background: #1a1613;
+  border-top: 2px solid #3b332c;
+  border-bottom: 2px solid #3b332c;
+}
+.cap-shop-tab {
+  font: inherit;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: #b9b0a7;
+  transition: background .15s ease, color .15s ease;
+}
+.cap-shop-tab[data-active="true"] { background: var(--color-accent); color: #fff; }
+.cap-shop-tab:hover:not([data-active="true"]) { color: #f4f1ee; }
+
+.cap-shop-back {
+  font: inherit;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 10px 16px;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid #4a4038;
+  color: #b9b0a7;
+  margin-left: auto;
+}
+.cap-shop-back:hover { color: #f4f1ee; border-color: #7d746b; }
+
+.cap-shop-count {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #8e857c;
+  margin: 0 0 20px;
+}
+
+.cap-shop-brand-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 30px;
+  letter-spacing: -0.01em;
+  margin: 0 0 18px;
+}
+
+/* Плитки брендов */
+.cap-brand-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2px;
+  background: #3b332c;
+  border: 2px solid #3b332c;
+}
+.cap-brand-card {
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  border: none;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0 1px, transparent 1px 4px),
+    linear-gradient(150deg, #2b231d 0%, #201a16 100%);
+  color: #f4f1ee;
+  padding: 26px 22px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 148px;
+  position: relative;
+  transition: background .2s ease, transform .2s cubic-bezier(.2,.75,.25,1);
+}
+.cap-brand-card::after {
+  content: "→";
+  position: absolute;
+  right: 20px;
+  bottom: 18px;
+  color: var(--color-accent);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity .2s ease, transform .2s ease;
+}
+.cap-brand-card:hover {
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 4px),
+    linear-gradient(150deg, #35291f 0%, #241d18 100%);
+}
+.cap-brand-card:hover::after { opacity: 1; transform: translateX(0); }
+.cap-brand-name {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+.cap-brand-meta {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8e857c;
+}
+.cap-brand-price {
+  margin-top: auto;
+  font-size: 13px;
+  color: #b9b0a7;
+}
+
+/* Карточки товаров */
+.cap-shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 2px;
+  background: #3b332c;
+  border: 2px solid #3b332c;
+}
+.cap-product {
+  background: #221c17;
+  padding: 18px 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 132px;
+  transition: background .15s ease;
+}
+.cap-product:hover { background: #271f1a; }
+.cap-product-name { font-family: var(--font-heading); font-weight: 700; font-size: 17px; line-height: 1.25; }
+.cap-product-brand { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: #8e857c; }
+.cap-product-price { font-family: var(--font-heading); font-weight: 700; font-size: 17px; }
+.cap-product-size { font-size: 11px; color: #8e857c; }
+.cap-product-out { font-size: 12px; color: #8e857c; margin-top: auto; }
+
+.cap-size {
+  font: inherit;
+  font-size: 11px;
+  padding: 4px 9px;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid #3b332c;
+  color: #8e857c;
+  transition: border-color .15s ease, color .15s ease;
+}
+.cap-size[data-active="true"] { border-color: #b9b0a7; color: #f4f1ee; }
+.cap-size:hover { color: #f4f1ee; }
+
+/* ── Магазин: колонка по центру ─────────────────────────────── */
+
+/* Витрина читается как страница каталога, а не как полотно во всю ширину:
+   на 27" мониторе иначе получается десять колонок мелких карточек. */
+.cap-shop-head,
+.cap-shop-section,
+.cap-shop-bar-inner {
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
+}
+.cap-shop-head {
+  padding: 72px 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.cap-shop-section { padding: 36px 32px 72px; }
+.cap-shop-bar-inner {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding-inline: 32px;
+}
+.cap-shop-bar { padding: 18px 0; }
+
+/* Карточек в ряд теперь меньше, поэтому им можно дать воздуха. */
+.cap-brand-grid { grid-template-columns: repeat(auto-fill, minmax(272px, 1fr)); }
+.cap-shop-grid { grid-template-columns: repeat(auto-fill, minmax(268px, 1fr)); }
+.cap-product { padding: 20px; gap: 14px; }
+
+/* Корзина — та же колонка, что и витрина. */
+.cap-order-grid {
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  border-top: 2px solid #3b332c;
+}
+.cap-order-grid > div { padding: 36px 32px 56px; }
+.cap-order-grid > div:first-child { border-right: 2px solid #3b332c; }
+
+/* Текст, который ведёт себя как ссылка: правка по клику в таблицах админки. */
+.adm-linkish {
+  font: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+  text-align: left;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.25);
+}
+.adm-linkish:hover { border-bottom-color: currentColor; }

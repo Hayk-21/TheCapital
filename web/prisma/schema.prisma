@@ -1,0 +1,299 @@
+// The Capital — схема контента сайта.
+//
+// Принцип: всё, что видно на сайте, лежит здесь и правится через админку.
+// Тексты хранятся сразу на двух языках (en/ru) в одной записи, чтобы
+// редактор мог показывать оба варианта рядом и не терял связь между ними.
+//
+// Переезд на Postgres: поменять provider ниже и DATABASE_URL. Ни одно поле
+// не использует SQLite-специфичных типов, так что схема переносится как есть.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ─────────────────────────────────────────────────────────────
+//  Доступ
+// ─────────────────────────────────────────────────────────────
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String?
+  passwordHash String
+  role         String    @default("editor") // owner | admin | editor
+  createdAt    DateTime  @default(now())
+  lastLoginAt  DateTime?
+}
+
+// ─────────────────────────────────────────────────────────────
+//  Медиа
+// ─────────────────────────────────────────────────────────────
+
+model Media {
+  id        String      @id @default(cuid())
+  path      String // публичный путь, напр. /uploads/2026/08/hero.webp
+  filename  String
+  mimeType  String
+  width     Int?
+  height    Int?
+  size      Int
+  altEn     String?
+  altRu     String?
+  createdAt DateTime    @default(now())
+  slots     ImageSlot[]
+}
+
+// Именованное место под картинку на странице: "home.hero", "menu.hero",
+// "home.teaser.<listEntryId>" для картинок внутри повторяющихся блоков.
+model ImageSlot {
+  key         String   @id
+  mediaId     String?
+  media       Media?   @relation(fields: [mediaId], references: [id], onDelete: SetNull)
+  fit         String   @default("cover") // cover | contain
+  focalX      Float    @default(50) // % по горизонтали
+  focalY      Float    @default(50) // % по вертикали
+  scale       Float    @default(1)
+  placeholder String? // подсказка в пустом слоте, видна только редактору
+  updatedAt   DateTime @updatedAt
+}
+
+// ─────────────────────────────────────────────────────────────
+//  Тексты
+// ─────────────────────────────────────────────────────────────
+
+// Одиночные строки: заголовки, подписи, кнопки.
+// scope — страница ("home", "menu", "visit") или "common" для сквозных.
+model Text {
+  id        String   @id @default(cuid())
+  scope     String
+  key       String
+  en        String
+  ru        String
+  kind      String   @default("line") // line | multiline — как рисовать поле в редакторе
+  updatedAt DateTime @updatedAt
+
+  @@unique([scope, key])
+}
+
+// ─────────────────────────────────────────────────────────────
+//  Повторяющиеся блоки (факты, отзывы, тизеры, часы, правила…)
+// ─────────────────────────────────────────────────────────────
+
+// Список как таковой: home.facts, home.reviews, visit.hours и т.д.
+// Набор полей у элементов описан в src/lib/content-schema.ts — редактор
+// берёт оттуда, какие поля рисовать при добавлении нового элемента.
+model ListBlock {
+  id    String      @id @default(cuid())
+  scope String
+  key   String
+  items ListEntry[]
+
+  @@unique([scope, key])
+}
+
+// Элемент списка. Значения полей — JSON-строка вида {"value":"40+","label":"Flavours"},
+// отдельно для каждого языка. JSON, а не колонки, потому что у разных списков
+// разный набор полей, и админка должна уметь добавлять элементы без миграции.
+model ListEntry {
+  id        String    @id @default(cuid())
+  blockId   String
+  block     ListBlock @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  position  Int
+  visible   Boolean   @default(true)
+  en        String    @default("{}")
+  ru        String    @default("{}")
+  updatedAt DateTime  @updatedAt
+
+  @@index([blockId, position])
+}
+
+// ─────────────────────────────────────────────────────────────
+//  Навигация
+// ─────────────────────────────────────────────────────────────
+
+model NavItem {
+  id       String  @id @default(cuid())
+  labelEn  String
+  labelRu  String
+  href     String
+  position Int
+  visible  Boolean @default(true)
+  external Boolean @default(false)
+}
+
+// ─────────────────────────────────────────────────────────────
+//  Меню заведения
+// ─────────────────────────────────────────────────────────────
+
+model MenuGroup {
+  id       String     @id @default(cuid())
+  section  String // shisha | kitchen
+  titleEn  String
+  titleRu  String
+  noteEn   String?
+  noteRu   String?
+  position Int
+  visible  Boolean    @default(true)
+  items    MenuItem[]
+
+  @@index([section, position])
+}
+
+model MenuItem {
+  id     String    @id @default(cuid())
+  group  MenuGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId String
+
+  nameEn String
+  nameRu String
+  descEn String?
+  descRu String?
+
+  // Цена числом — форматирование ("5,000 ֏" / "5 000 ֏") делает рендер по языку.
+  // priceFrom добавляет "from" / "от".
+  priceAmount Int?
+  priceFrom   Boolean @default(false)
+
+  position Int
+  visible  Boolean @default(true)
+
+  @@index([groupId, position])
+}
+
+// ─────────────────────────────────────────────────────────────
+//  Настройки сайта (телефон, адрес, соцсети)
+// ─────────────────────────────────────────────────────────────
+
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+// ─────────────────────────────────────────────────────────────
+//  Заявки на бронь
+// ─────────────────────────────────────────────────────────────
+
+// ─────────────────────────────────────────────────────────────
+//  Магазин: товары для кальяна
+// ─────────────────────────────────────────────────────────────
+
+// Бренд внутри раздела: «Black Burn» в табаках, «25мм» в углях.
+// Раздел — строка ("tobacco" | "coal"), список разделов в content-schema.ts.
+model ProductBrand {
+  id       String    @id @default(cuid())
+  category String
+  name     String
+  position Int
+  visible  Boolean   @default(true)
+  products Product[]
+
+  @@unique([category, name])
+  @@index([category, position])
+}
+
+// Товар: вкус табака или марка угля. Цена лежит в вариантах — фасовки
+// у каждого бренда свои (25/100/200 у Black Burn, 20/80 у Догмы).
+model Product {
+  id       String  @id @default(cuid())
+  brand    ProductBrand @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  brandId  String
+
+  name     String
+  descEn   String?
+  descRu   String?
+  position Int
+  visible  Boolean @default(true)
+
+  variants ProductVariant[]
+
+  @@index([brandId, position])
+}
+
+model ProductVariant {
+  id        String  @id @default(cuid())
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+
+  /// Фасовка как её показывают гостю: «25 г», «72 шт».
+  size  String
+  price Int
+  /// Снято с продажи вручную или по остаткам из «Моего склада».
+  inStock Boolean @default(true)
+
+  @@index([productId])
+}
+
+// Заказ с сайта: доставка или самовывоз.
+//
+// Названия и цены позиций копируются в OrderItem снимком: меню правится
+// в админке, а заказ должен навсегда остаться таким, каким его сделал гость.
+model Order {
+  id     String @id @default(cuid())
+  /// Человеческий номер заказа: считается при создании, SQLite не умеет
+  /// autoincrement на не-id поле.
+  number Int    @unique
+
+  kind    String // delivery | pickup
+  name    String
+  phone   String
+  address String? // только для доставки
+  comment String?
+  atTime  String? // «как можно скорее» или конкретное время
+
+  // Суммы в драмах, на момент оформления.
+  itemsTotal  Int
+  deliveryFee Int @default(0)
+  total       Int
+
+  lang      String      @default("en")
+  status    String      @default("new") // new | confirmed | delivering | done | declined
+  adminNote String?
+  items     OrderItem[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@index([status, createdAt])
+}
+
+model OrderItem {
+  id      String @id @default(cuid())
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId String
+
+  // Ссылка на вариант товара — необязательная: товар могли удалить,
+  // заказ от этого разваливаться не должен.
+  variantId String?
+
+  titleEn String
+  titleRu String
+  price   Int
+  qty     Int
+  /// Пожелание к позиции: вкус для чаши, «без лука» для кухни.
+  note    String?
+
+  @@index([orderId])
+}
+
+model Booking {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String
+  date      String?
+  time      String?
+  guests    Int?
+  seating   String?
+  note      String?
+  lang      String   @default("en")
+  status    String   @default("new") // new | confirmed | declined | done
+  adminNote String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+}
