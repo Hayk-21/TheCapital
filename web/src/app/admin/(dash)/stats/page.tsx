@@ -1,17 +1,11 @@
 import type { Metadata } from "next";
 import { db } from "@/lib/db";
+import { StatsCharts } from "@/components/admin/StatsCharts";
 
 export const metadata: Metadata = { title: "Статистика — The Capital" };
 
 const amd = (v: number) => `${v.toLocaleString("ru-RU").replace(/,/g, " ")} ֏`;
 
-const STATUS_LABEL: Record<string, string> = {
-  new: "новые",
-  confirmed: "подтверждены",
-  delivering: "в доставке",
-  done: "выполнены",
-  declined: "отказ",
-};
 
 /** Заказы и заявки в цифрах: сколько, на какую сумму, что берут. */
 export default async function StatsPage() {
@@ -50,6 +44,24 @@ export default async function StatsPage() {
 
   const delivery = paid.filter((o) => o.kind === "delivery").length;
 
+  // Выручка по дням за две недели: пустые дни тоже нужны, иначе график врёт
+  // о плотности заказов.
+  const DAYS = 14;
+  const byDay = new Map<string, { total: number; count: number }>();
+  for (let i = DAYS - 1; i >= 0; i--) {
+    const d = new Date(now.getTime() - i * 86400000);
+    byDay.set(d.toISOString().slice(0, 10), { total: 0, count: 0 });
+  }
+  for (const o of paid) {
+    const key = o.createdAt.toISOString().slice(0, 10);
+    const rec = byDay.get(key);
+    if (rec) {
+      rec.total += o.total;
+      rec.count += 1;
+    }
+  }
+  const dayPoints = [...byDay.entries()].map(([day, v]) => ({ day, ...v }));
+
   return (
     <>
       <h1 className="adm-title">Статистика</h1>
@@ -83,53 +95,42 @@ export default async function StatsPage() {
         <Card label="Товаров в продаже" value={String(productCount)} hint={`${brandCount} брендов`} />
       </div>
 
-      <h2 className="adm-title" style={{ fontSize: 20, marginTop: 32 }}>
-        Заказы по статусам
-      </h2>
-      {orders.length === 0 ? (
-        <div className="adm-card">
-          <span className="adm-hint">Заказов пока нет.</span>
-        </div>
-      ) : (
-        <div className="adm-card" style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
-          {[...byStatus.entries()].map(([status, count]) => (
-            <span key={status}>
-              <span className="adm-hint">{STATUS_LABEL[status] ?? status}: </span>
-              <strong>{count}</strong>
-            </span>
-          ))}
-        </div>
+      <StatsCharts
+        days={dayPoints}
+        statuses={[...byStatus.entries()].map(([status, count]) => ({ status, count }))}
+        top={bestsellers.map(([title, rec]) => ({ title, qty: rec.qty, sum: rec.sum }))}
+      />
+
+      {/* Те же числа таблицей: график показывает соотношение, таблица — точные
+          значения и остаётся доступной, если графика не отрисовалась. */}
+      {bestsellers.length > 0 && (
+        <details style={{ marginTop: 24 }}>
+          <summary className="adm-hint" style={{ cursor: "pointer" }}>
+            Показать таблицей
+          </summary>
+          <div style={{ overflowX: "auto", marginTop: 12 }}>
+            <table className="adm-table">
+              <thead>
+                <tr>
+                  <th>Позиция</th>
+                  <th>Штук</th>
+                  <th>На сумму</th>
+                </tr>
+              </thead>
+              <tbody>
+                {bestsellers.map(([title, rec]) => (
+                  <tr key={title}>
+                    <td>{title}</td>
+                    <td>{rec.qty}</td>
+                    <td>{amd(rec.sum)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </details>
       )}
 
-      <h2 className="adm-title" style={{ fontSize: 20, marginTop: 32 }}>
-        Что берут чаще всего
-      </h2>
-      {bestsellers.length === 0 ? (
-        <div className="adm-card">
-          <span className="adm-hint">Пока не из чего считать — заказов не было.</span>
-        </div>
-      ) : (
-        <div style={{ overflowX: "auto" }}>
-          <table className="adm-table">
-            <thead>
-              <tr>
-                <th>Позиция</th>
-                <th>Штук</th>
-                <th>На сумму</th>
-              </tr>
-            </thead>
-            <tbody>
-              {bestsellers.map(([title, rec]) => (
-                <tr key={title}>
-                  <td>{title}</td>
-                  <td>{rec.qty}</td>
-                  <td>{amd(rec.sum)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
     </>
   );
 }

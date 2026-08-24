@@ -926,3 +926,18 @@ textarea.adm-input { min-height: 80px; resize: vertical; }
   border-color: #100d0b;
 }
 .adm-flash .adm-btn:hover { background: #000; border-color: #000; }
+
+/* ── Графики статистики ──────────────────────────────────────── */
+
+.adm-chart-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 17px;
+  margin: 0 0 14px;
+}
+.adm-charts-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  align-items: start;
+  gap: 16px;
+}
