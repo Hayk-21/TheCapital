@@ -14,6 +14,11 @@ export default async function ShopPage(props: RouteParams & RouteSearch) {
   const setup = await preparePage("shop", props);
   const { content, lang, canEdit, editing } = setup;
 
+  const categories = await db.productCategory.findMany({
+    where: editing ? {} : { visible: true },
+    orderBy: { position: "asc" },
+  });
+
   // В режиме правки показываем и скрытые бренды: иначе их не вернуть на сайт.
   const brands = await db.productBrand.findMany({
       where: editing ? {} : { visible: true },
@@ -30,6 +35,11 @@ export default async function ShopPage(props: RouteParams & RouteSearch) {
   return (
     <SiteShell content={content} lang={lang} canEdit={canEdit} editing={editing}>
       <ShopView
+        categories={categories.map((c) => ({
+          key: c.key,
+          title: { en: c.titleEn, ru: c.titleRu },
+          visible: c.visible,
+        }))}
         brands={brands.map((b) => ({
           id: b.id,
           category: b.category,

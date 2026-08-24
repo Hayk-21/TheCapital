@@ -5,6 +5,7 @@ import { BrandsTable } from "@/components/admin/BrandsTable";
 export const metadata: Metadata = { title: "Магазин — The Capital" };
 
 export default async function ShopAdminPage() {
+  const categories = await db.productCategory.findMany({ orderBy: { position: "asc" } });
   const brands = await db.productBrand.findMany({
     orderBy: [{ category: "asc" }, { position: "asc" }],
     include: { products: { include: { variants: true } } },
@@ -19,6 +20,7 @@ export default async function ShopAdminPage() {
       </p>
 
       <BrandsTable
+        categories={categories.map((c) => ({ key: c.key, title: c.titleRu }))}
         brands={brands.map((b) => ({
           id: b.id,
           category: b.category,

@@ -5,7 +5,14 @@ import { useContent } from "@/components/editor/ContentProvider";
 import { Editable } from "@/components/editor/Editable";
 import { Txt } from "@/components/editor/fields";
 import { updateBrand } from "@/lib/actions";
-import { AddBrand, AddProduct, BrandCardEdit, HiddenBrands, ProductCardEdit } from "./ShopEdit";
+import {
+  AddBrand,
+  AddProduct,
+  BrandCardEdit,
+  CategoryTools,
+  HiddenBrands,
+  ProductCardEdit,
+} from "./ShopEdit";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { useCart } from "./CartProvider";
@@ -15,6 +22,12 @@ import type { Lang } from "@/lib/content-schema";
 
 export type ShopVariant = { id: string; size: string; price: number; inStock: boolean };
 export type ShopProduct = { id: string; name: string; variants: ShopVariant[] };
+export type ShopCategory = {
+  key: string;
+  title: { en: string; ru: string };
+  visible: boolean;
+};
+
 export type ShopBrand = {
   id: string;
   category: string;
@@ -30,11 +43,17 @@ export type ShopBrand = {
  * тонет. Каталог всё равно отдаётся страницей целиком: фильтрация и поиск
  * идут в браузере, без запроса на каждый символ.
  */
-export function ShopView({ brands }: { brands: ShopBrand[] }) {
+export function ShopView({
+  categories,
+  brands,
+}: {
+  categories: ShopCategory[];
+  brands: ShopBrand[];
+}) {
   const { lang, content, editing, save } = useContent();
   const { add } = useCart();
 
-  const [category, setCategory] = useState("tobacco");
+  const [category, setCategory] = useState(categories[0]?.key ?? "tobacco");
   const [openBrand, setOpenBrand] = useState<string | null>(null);
   const [query, setQuery] = useState("");
 
@@ -108,10 +127,7 @@ export function ShopView({ brands }: { brands: ShopBrand[] }) {
           <div className="cap-shop-bar">
             <div className="cap-shop-bar-inner">
             <div style={{ display: "flex", border: "2px solid #4a4038", flex: "0 0 auto" }}>
-              {[
-                { key: "tobacco", label: content.texts.catTobacco?.[lang] || "Табаки" },
-                { key: "coal", label: content.texts.catCoal?.[lang] || "Угли" },
-              ].map((c) => (
+              {categories.map((c) => (
                 <button
                   key={c.key}
                   type="button"
@@ -122,11 +138,14 @@ export function ShopView({ brands }: { brands: ShopBrand[] }) {
                   }}
                   className="cap-shop-tab"
                   data-active={category === c.key}
+                  style={c.visible ? undefined : { opacity: 0.5 }}
                 >
-                  {c.label}
+                  {c.title[lang] || c.title.en}
                 </button>
               ))}
             </div>
+
+            {editing && <CategoryTools categories={categories} current={category} save={save} />}
 
             <input
               value={query}

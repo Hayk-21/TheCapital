@@ -186,11 +186,22 @@ model Setting {
 //  Магазин: товары для кальяна
 // ─────────────────────────────────────────────────────────────
 
+// Раздел витрины: «Табаки», «Угли» и всё, что заведут потом.
+// Раньше список был захардкожен в коде — теперь это обычные данные.
+model ProductCategory {
+  key      String         @id
+  titleEn  String
+  titleRu  String
+  position Int
+  visible  Boolean        @default(true)
+  brands   ProductBrand[]
+}
+
 // Бренд внутри раздела: «Black Burn» в табаках, «25мм» в углях.
-// Раздел — строка ("tobacco" | "coal"), список разделов в content-schema.ts.
 model ProductBrand {
-  id       String    @id @default(cuid())
+  id       String          @id @default(cuid())
   category String
+  section  ProductCategory @relation(fields: [category], references: [key], onDelete: Cascade)
   name     String
   position Int
   visible  Boolean   @default(true)

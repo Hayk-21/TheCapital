@@ -14,13 +14,16 @@ export type BrandRow = {
   hidden: number;
 };
 
-const CATEGORIES = [
-  { key: "tobacco", label: "Табаки" },
-  { key: "coal", label: "Угли" },
-];
+export type CategoryRow = { key: string; title: string };
 
-export function BrandsTable({ brands }: { brands: BrandRow[] }) {
-  const [category, setCategory] = useState("tobacco");
+export function BrandsTable({
+  categories,
+  brands,
+}: {
+  categories: CategoryRow[];
+  brands: BrandRow[];
+}) {
+  const [category, setCategory] = useState(categories[0]?.key ?? "tobacco");
   const [newName, setNewName] = useState("");
   const [editing, setEditing] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
@@ -33,7 +36,7 @@ export function BrandsTable({ brands }: { brands: BrandRow[] }) {
   return (
     <>
       <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
-        {CATEGORIES.map((c) => (
+        {categories.map((c) => (
           <button
             key={c.key}
             type="button"
@@ -41,7 +44,7 @@ export function BrandsTable({ brands }: { brands: BrandRow[] }) {
             data-variant={category === c.key ? undefined : "ghost"}
             onClick={() => setCategory(c.key)}
           >
-            {c.label} ({brands.filter((b) => b.category === c.key).length})
+            {c.title} ({brands.filter((b) => b.category === c.key).length})
           </button>
         ))}
       </div>

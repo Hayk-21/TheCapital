@@ -4,17 +4,21 @@ import { useState, type CSSProperties } from "react";
 import { Editable } from "@/components/editor/Editable";
 import {
   createBrand,
+  createCategory,
   createProduct,
   createVariant,
   deleteBrand,
+  deleteCategory,
   deleteProduct,
   deleteVariant,
   moveBrand,
+  moveCategory,
   updateBrand,
+  updateCategory,
   updateProduct,
   updateVariant,
 } from "@/lib/actions";
-import type { ShopBrand, ShopProduct, ShopVariant } from "./ShopView";
+import type { ShopBrand, ShopCategory, ShopProduct, ShopVariant } from "./ShopView";
 import type { Lang } from "@/lib/content-schema";
 
 /**
@@ -371,3 +375,118 @@ export function HiddenBrands({
 }
 
 export type { Lang };
+
+/**
+ * Управление разделами витрины: переименовать, спрятать, сдвинуть, удалить,
+ * добавить новый рядом с «Табаками» и «Углями».
+ */
+export function CategoryTools({
+  categories,
+  current,
+  save,
+}: {
+  categories: ShopCategory[];
+  current: string;
+  save: Save;
+}) {
+  const [adding, setAdding] = useState(false);
+  const [titleRu, setTitleRu] = useState("");
+  const [titleEn, setTitleEn] = useState("");
+
+  const cat = categories.find((c) => c.key === current);
+
+  return (
+    <span style={{ display: "inline-flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
+      {cat && (
+        <>
+          <Editable
+            value={cat.title.ru}
+            editing
+            placeholder="раздел"
+            style={{ fontSize: 12 }}
+            onSave={(next) => save(() => updateCategory(cat.key, { titleRu: next }))}
+          />
+          <Editable
+            value={cat.title.en}
+            editing
+            placeholder="EN"
+            style={{ fontSize: 11, color: "#8e857c" }}
+            onSave={(next) => save(() => updateCategory(cat.key, { titleEn: next }))}
+          />
+          <button
+            type="button"
+            className="cap-tool-btn"
+            title="Левее"
+            onClick={() => save(() => moveCategory(cat.key, "up"))}
+          >
+            ←
+          </button>
+          <button
+            type="button"
+            className="cap-tool-btn"
+            title="Правее"
+            onClick={() => save(() => moveCategory(cat.key, "down"))}
+          >
+            →
+          </button>
+          <button
+            type="button"
+            className="cap-tool-btn"
+            title={cat.visible ? "Скрыть раздел с сайта" : "Показать раздел"}
+            onClick={() => save(() => updateCategory(cat.key, { visible: !cat.visible }))}
+          >
+            {cat.visible ? "виден" : "скрыт"}
+          </button>
+          <button
+            type="button"
+            className="cap-tool-btn"
+            data-danger="true"
+            title="Удалить раздел со всем содержимым"
+            onClick={() => {
+              if (confirm(`Удалить раздел ${cat.title.ru} со всеми брендами и позициями?`))
+                save(() => deleteCategory(cat.key));
+            }}
+          >
+            ✕
+          </button>
+        </>
+      )}
+
+      {adding ? (
+        <form
+          style={{ display: "inline-flex", gap: 4 }}
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!titleRu.trim()) return;
+            void save(() => createCategory(titleRu, titleEn)).then(() => {
+              setTitleRu("");
+              setTitleEn("");
+              setAdding(false);
+            });
+          }}
+        >
+          <input
+            autoFocus
+            value={titleRu}
+            onChange={(e) => setTitleRu(e.target.value)}
+            placeholder="Чаши"
+            style={{ ...MINI, width: 90 }}
+          />
+          <input
+            value={titleEn}
+            onChange={(e) => setTitleEn(e.target.value)}
+            placeholder="Bowls"
+            style={{ ...MINI, width: 90 }}
+          />
+          <button type="submit" className="cap-tool-btn">
+            ✓
+          </button>
+        </form>
+      ) : (
+        <button type="button" className="cap-tool-btn" onClick={() => setAdding(true)}>
+          + раздел
+        </button>
+      )}
+    </span>
+  );
+}

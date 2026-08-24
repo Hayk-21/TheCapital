@@ -84,23 +84,32 @@ export function Header() {
 
   return (
     <header style={H.bar}>
-      <Link href={`/${lang}`} style={H.brand}>
-        {(content.logo?.src || editing) && (
-          <span
-            style={H.logo}
-            onClick={(e) => {
-              // В режиме правки клик по знаку открывает выбор файла, а не ссылку.
-              if (editing) e.preventDefault();
-            }}
-          >
+      {/* В режиме правки знак живёт вне ссылки: внутри неё клик по кнопке
+          «заменить фото» уходил в переход на главную и выбор файла не
+          успевал открыться. */}
+      {editing ? (
+        <span style={H.brand}>
+          <span style={H.logo}>
             <Slot image={content.logo ?? null} emptyLabel="Знак" />
           </span>
-        )}
-        <span style={H.brandText}>
-          <SettingTxt k="brandName" style={H.brandName} />
-          <SettingTxt k="brandCity" style={H.brandCity} />
+          <span style={H.brandText}>
+            <SettingTxt k="brandName" style={H.brandName} />
+            <SettingTxt k="brandCity" style={H.brandCity} />
+          </span>
         </span>
-      </Link>
+      ) : (
+        <Link href={`/${lang}`} style={H.brand}>
+          {content.logo?.src && (
+            <span style={H.logo}>
+              <Slot image={content.logo} emptyLabel="Знак" />
+            </span>
+          )}
+          <span style={H.brandText}>
+            <SettingTxt k="brandName" style={H.brandName} />
+            <SettingTxt k="brandCity" style={H.brandCity} />
+          </span>
+        </Link>
+      )}
 
       <nav style={H.nav}>
         {content.nav.map((item) => {

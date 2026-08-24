@@ -696,3 +696,99 @@ export async function deleteVariant(id: string) {
   revalidatePath("/admin/shop");
   await refresh();
 }
+
+// ─────────────────────────────────────────────────────────────
+//  Разделы витрины
+// ─────────────────────────────────────────────────────────────
+
+/** Ключ раздела: латиница и цифры, чтобы он читался в адресе и в коде. */
+function categoryKey(title: string) {
+  const map: Record<string, string> = {
+    а: "a", б: "b", в: "v", г: "g", д: "d", е: "e", ё: "e", ж: "zh", з: "z",
+    и: "i", й: "y", к: "k", л: "l", м: "m", н: "n", о: "o", п: "p", р: "r",
+    с: "s", т: "t", у: "u", ф: "f", х: "h", ц: "c", ч: "ch", ш: "sh", щ: "sch",
+    ъ: "", ы: "y", ь: "", э: "e", ю: "yu", я: "ya",
+  };
+  const slug = title
+    .toLowerCase()
+    .split("")
+    .map((ch) => map[ch] ?? ch)
+    .join("")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40);
+  return slug || `cat-${Date.now().toString(36)}`;
+}
+
+export async function createCategory(titleRu: string, titleEn?: string) {
+  await requireSession();
+  const ru = titleRu.trim();
+  if (!ru) throw new Error("Нужно название раздела");
+
+  let key = categoryKey(titleEn?.trim() || ru);
+  // Ключ уникален: если такой уже есть, добавляем номер.
+  for (let i = 2; await db.productCategory.findUnique({ where: { key } }); i++) {
+    key = `${categoryKey(titleEn?.trim() || ru)}-${i}`;
+  }
+
+  const last = await db.productCategory.findFirst({
+    orderBy: { position: "desc" },
+    select: { position: true },
+  });
+
+  await db.productCategory.create({
+    data: {
+      key,
+      titleRu: ru.slice(0, 60),
+      titleEn: (titleEn?.trim() || ru).slice(0, 60),
+      position: (last?.position ?? -1) + 1,
+    },
+  });
+  revalidatePath("/admin/shop");
+  await refresh();
+  return key;
+}
+
+export async function updateCategory(
+  key: string,
+  data: { titleRu?: string; titleEn?: string; visible?: boolean },
+) {
+  await requireSession();
+  await db.productCategory.update({
+    where: { key },
+    data: {
+      ...data,
+      titleRu: data.titleRu?.trim().slice(0, 60),
+      titleEn: data.titleEn?.trim().slice(0, 60),
+    },
+  });
+  revalidatePath("/admin/shop");
+  await refresh();
+}
+
+/** Удаляет раздел вместе с брендами и позициями внутри него. */
+export async function deleteCategory(key: string) {
+  await requireSession();
+  await db.productCategory.delete({ where: { key } });
+  revalidatePath("/admin/shop");
+  await refresh();
+}
+
+export async function moveCategory(key: string, dir: "up" | "down") {
+  await requireSession();
+  const cat = await db.productCategory.findUnique({ where: { key } });
+  if (!cat) return;
+
+  const neighbour = await db.productCategory.findFirst({
+    where: { position: dir === "up" ? { lt: cat.position } : { gt: cat.position } },
+    orderBy: { position: dir === "up" ? "desc" : "asc" },
+  });
+  if (!neighbour) return;
+
+  await db.$transaction([
+    db.productCategory.update({ where: { key: cat.key }, data: { position: neighbour.position } }),
+    db.productCategory.update({ where: { key: neighbour.key }, data: { position: cat.position } }),
+  ]);
+  revalidatePath("/admin/shop");
+  await refresh();
+}
