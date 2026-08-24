@@ -12,7 +12,7 @@
  */
 import "dotenv/config";
 import { readFile } from "node:fs/promises";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client.js";
 
 type Raw = {
@@ -26,7 +26,7 @@ type Raw = {
 };
 
 const hidden = process.argv.includes("--hidden");
-const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL ?? "file:./dev.db" });
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const db = new PrismaClient({ adapter });
 
 const raw: Raw = JSON.parse(await readFile("data/overpack-catalog.json", "utf8"));

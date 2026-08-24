@@ -10,13 +10,11 @@
  */
 import "dotenv/config";
 import bcrypt from "bcryptjs";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client.ts";
 import { IMAGE_SLOTS, LISTS, type ListDef } from "../src/lib/content-schema.ts";
 
-const adapter = new PrismaBetterSqlite3({
-  url: process.env.DATABASE_URL ?? "file:./dev.db",
-});
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const db = new PrismaClient({ adapter });
 
 type Pair = [en: string, ru: string];
@@ -44,6 +42,7 @@ const SETTINGS: Record<string, string> = {
 const NAV: Array<{ href: string; label: Pair }> = [
   { href: "/", label: ["Home", "Главная"] },
   { href: "/menu", label: ["Menu", "Меню"] },
+  { href: "/shop", label: ["Hookah shop", "Наши дистрибуции"] },
   { href: "/visit", label: ["Visit", "Контакты"] },
 ];
 

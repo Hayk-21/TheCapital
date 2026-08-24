@@ -4,8 +4,7 @@
 // Тексты хранятся сразу на двух языках (en/ru) в одной записи, чтобы
 // редактор мог показывать оба варианта рядом и не терял связь между ними.
 //
-// Переезд на Postgres: поменять provider ниже и DATABASE_URL. Ни одно поле
-// не использует SQLite-специфичных типов, так что схема переносится как есть.
+// База — PostgreSQL (Neon). Строка подключения в DATABASE_URL.
 
 generator client {
   provider = "prisma-client"
@@ -13,7 +12,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -235,8 +234,7 @@ model ProductVariant {
 // в админке, а заказ должен навсегда остаться таким, каким его сделал гость.
 model Order {
   id     String @id @default(cuid())
-  /// Человеческий номер заказа: считается при создании, SQLite не умеет
-  /// autoincrement на не-id поле.
+  /// Человеческий номер заказа: считается при создании.
   number Int    @unique
 
   kind    String // delivery | pickup

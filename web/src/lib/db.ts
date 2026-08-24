@@ -1,4 +1,4 @@
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@/generated/prisma/client";
 
 // В dev Next.js перезагружает модули на каждое изменение — без глобального
@@ -6,8 +6,11 @@ import { PrismaClient } from "@/generated/prisma/client";
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
 function createClient() {
-  const url = process.env.DATABASE_URL ?? "file:./dev.db";
-  const adapter = new PrismaBetterSqlite3({ url });
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) throw new Error("Не задан DATABASE_URL");
+
+  // Neon за пулером: соединения короткие, поэтому пул держим небольшой.
+  const adapter = new PrismaPg({ connectionString, max: 5 });
   return new PrismaClient({ adapter });
 }
 
