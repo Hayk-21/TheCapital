@@ -7,6 +7,9 @@
  * витрине. Картинка попадает в базу (Media.data), а не на диск: контейнер на
  * Railway пересоздаётся при каждом деплое.
  *
+ * Углы плашек скругляются маской: у части логотипов за скруглением лежит не
+ * прозрачность, а белый фон, и на тёмной витрине он вылезал белыми уголками.
+ *
  * Бренд ищется по имени, как оно заведено у нас. Не нашёлся — строка
  * пропускается с предупреждением, остальные заливаются.
  *
@@ -48,6 +51,30 @@ const LOGOS: Record<string, string> = {
 // и на ретину, и на страницу бренда, где логотип крупнее.
 const MAX_WIDTH = 640;
 
+// Доля высоты, которую занимает скругление у фирменных плашек: замерено по
+// углам исходников — тёмный пиксель начинается примерно на 16% высоты.
+const CORNER = 0.16;
+
+/** Обрезает углы прозрачностью, чтобы белая подложка не торчала на тёмном фоне. */
+async function roundCorners(input: Buffer) {
+  const flat = await sharp(input)
+    .resize({ width: MAX_WIDTH, withoutEnlargement: true })
+    .ensureAlpha()
+    .toBuffer({ resolveWithObject: true });
+
+  const { width, height } = flat.info;
+  const r = Math.round(height * CORNER);
+  const mask = Buffer.from(
+    `<svg width="${width}" height="${height}">` +
+      `<rect width="${width}" height="${height}" rx="${r}" ry="${r}" fill="#fff"/></svg>`,
+  );
+
+  return sharp(flat.data)
+    .composite([{ input: mask, blend: "dest-in" }])
+    .webp({ quality: 88, alphaQuality: 100 })
+    .toBuffer({ resolveWithObject: true });
+}
+
 const force = process.argv.includes("--force");
 
 const db = new PrismaClient({
@@ -88,11 +115,7 @@ for (const [name, file] of Object.entries(LOGOS)) {
   }
 
   const input = Buffer.from(await res.arrayBuffer());
-  // Прозрачность у плашек значимая — скруглённые углы, поэтому webp с альфой.
-  const out = await sharp(input)
-    .resize({ width: MAX_WIDTH, withoutEnlargement: true })
-    .webp({ quality: 88 })
-    .toBuffer({ resolveWithObject: true });
+  const out = await roundCorners(input);
 
   const media = await db.media.create({
     data: {
@@ -116,6 +139,14 @@ for (const [name, file] of Object.entries(LOGOS)) {
     update: { mediaId: media.id, fit: "contain" },
     create: { key: slotKey, mediaId: media.id, fit: "contain" },
   });
+
+  // Отдача картинок кеширует навсегда, поэтому замена — это всегда новая
+  // запись. Прежнюю убираем, если на неё больше никто не смотрит: иначе
+  // каждая перезаливка оставляла бы в медиатеке по копии логотипа.
+  if (existing?.mediaId) {
+    const used = await db.imageSlot.count({ where: { mediaId: existing.mediaId } });
+    if (used === 0) await db.media.delete({ where: { id: existing.mediaId } });
+  }
 
   console.log(
     `+ ${name}: ${out.info.width}x${out.info.height}, ${Math.round(out.data.byteLength / 1024)} КБ`,

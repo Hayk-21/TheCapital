@@ -893,6 +893,7 @@ textarea.adm-input { min-height: 80px; resize: vertical; }
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+  border-radius: 6px;
 }
 
 /* Текст, который ведёт себя как ссылка: правка по клику в таблицах админки. */
@@ -1064,6 +1065,9 @@ header nav a:hover::after { transform: scaleX(1); }
   max-width: 100%;
   object-fit: contain;
   object-position: left center;
+  /* Плашки брендов скруглены; повторяем скругление и здесь, чтобы логотип,
+     загруженный вручную с белой подложкой, не торчал углами на тёмном фоне. */
+  border-radius: 8px;
 }
 .cap-brand-logo[data-edit="true"] {
   height: auto;
@@ -1072,7 +1076,7 @@ header nav a:hover::after { transform: scaleX(1); }
 }
 /* Рядом с заголовком бренда логотип крупнее — там есть место. */
 .cap-brand-logo-lg { height: 64px; }
-.cap-brand-logo-lg img { max-height: 64px; max-width: 260px; }
+.cap-brand-logo-lg img { max-height: 64px; max-width: 260px; border-radius: 10px; }
 
 /* Витрина открыта всегда, поэтому о закрытии говорим полосой над каталогом,
    а не пустой страницей. */
