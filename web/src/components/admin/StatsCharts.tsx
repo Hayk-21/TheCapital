@@ -3,10 +3,14 @@
 import { useState } from "react";
 
 /**
- * Графики статистики.
+ * Графики статистики — общие для магазина и для кафе.
  *
  * Рисуются вручную в SVG, без библиотеки: три простые формы не стоят лишних
  * ста килобайт в бандле админки.
+ *
+ * Магазин и кафе живут на странице раздельно, но формы у них одни и те же:
+ * столбики по дням и полосы по этапам. Отличается только то, что считается —
+ * драмы у заказов, штуки у заявок.
  *
  * Палитра проверена валидатором на тёмной поверхности карточки (#1c1714):
  * шкала этапов — один синий хью светлее→темнее с различимыми шагами, выручка
@@ -39,11 +43,20 @@ const STAGE_LABEL: Record<string, string> = {
   declined: "отказ",
 };
 
+/** У брони свои слова для тех же этапов. */
+const BOOKING_STAGE_LABEL: Record<string, string> = {
+  new: "новые",
+  confirmed: "подтверждены",
+  done: "гость был",
+  declined: "отказ",
+};
+
 export type DayPoint = { day: string; total: number; count: number };
 export type StatusPoint = { status: string; count: number };
 export type TopPoint = { title: string; qty: number; sum: number };
 
-export function StatsCharts({
+/** Графики магазина: деньги по дням, этапы заказа, что берут. */
+export function ShopCharts({
   days,
   statuses,
   top,
@@ -54,10 +67,37 @@ export function StatsCharts({
 }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
-      <RevenueChart days={days} />
+      <BarsChart
+        days={days}
+        title="Выручка по дням"
+        mode="money"
+        emptyText="За этот период заказов не было — как появятся, здесь будут столбики по дням."
+      />
       <div className="adm-charts-row">
-        <StatusChart statuses={statuses} />
+        <StatusChart statuses={statuses} title="Заказы по этапам" empty="Заказов пока нет." />
         <TopChart top={top} />
+      </div>
+    </div>
+  );
+}
+
+/** Графики кафе: заявки на бронь по дням и по этапам. */
+export function CafeCharts({ days, statuses }: { days: DayPoint[]; statuses: StatusPoint[] }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
+      <BarsChart
+        days={days}
+        title="Заявки по дням"
+        mode="count"
+        emptyText="За этот период заявок не было — как появятся, здесь будут столбики по дням."
+      />
+      <div className="adm-charts-row">
+        <StatusChart
+          statuses={statuses}
+          title="Заявки по этапам"
+          empty="Заявок пока нет."
+          labels={BOOKING_STAGE_LABEL}
+        />
       </div>
     </div>
   );
@@ -65,11 +105,28 @@ export function StatsCharts({
 
 // ─────────────────────────────────────────────────────────────
 
-/** Выручка по дням: столбики, потому что дни дискретны и их немного. */
-function RevenueChart({ days }: { days: DayPoint[] }) {
+/**
+ * Столбики по дням: дни дискретны и их немного.
+ *
+ * mode="money" рисует выручку, mode="count" — количество: заявка на бронь
+ * денег не приносит, но считать её по дням всё равно нужно.
+ */
+function BarsChart({
+  days,
+  title,
+  mode,
+  emptyText,
+}: {
+  days: DayPoint[];
+  title: string;
+  mode: "money" | "count";
+  emptyText: string;
+}) {
   const [hover, setHover] = useState<number | null>(null);
 
-  const max = Math.max(1, ...days.map((d) => d.total));
+  const value = (d: DayPoint) => (mode === "money" ? d.total : d.count);
+  const label = (v: number) => (mode === "money" ? AMD(v) : String(v));
+  const max = Math.max(1, ...days.map(value));
   const W = 720;
   const H = 220;
   const PAD_L = 8;
@@ -79,18 +136,18 @@ function RevenueChart({ days }: { days: DayPoint[] }) {
   const slot = (W - PAD_L * 2) / Math.max(1, days.length);
   const barW = Math.max(4, Math.min(26, slot - 6));
 
-  const empty = days.every((d) => d.total === 0);
+  const empty = days.every((d) => value(d) === 0);
 
   return (
     <section className="adm-card">
       <header style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-        <h2 className="adm-chart-title">Выручка по дням</h2>
+        <h2 className="adm-chart-title">{title}</h2>
         <span className="adm-hint">последние {days.length} дней</span>
       </header>
 
       {empty ? (
         <p className="adm-hint" style={{ margin: 0 }}>
-          За этот период заказов не было — как появятся, здесь будут столбики по дням.
+          {emptyText}
         </p>
       ) : (
         <>
@@ -99,7 +156,7 @@ function RevenueChart({ days }: { days: DayPoint[] }) {
             width="100%"
             height={H}
             role="img"
-            aria-label="Выручка по дням"
+            aria-label={title}
             style={{ display: "block", overflow: "visible" }}
           >
             {/* Сетка: три линии, чтобы читались порядки, и ни одной лишней. */}
@@ -116,7 +173,8 @@ function RevenueChart({ days }: { days: DayPoint[] }) {
             ))}
 
             {days.map((d, i) => {
-              const h = d.total === 0 ? 0 : Math.max(3, (d.total / max) * plotH);
+              const v = value(d);
+              const h = v === 0 ? 0 : Math.max(3, (v / max) * plotH);
               const x = PAD_L + i * slot + (slot - barW) / 2;
               const y = PAD_T + plotH - h;
               const active = hover === i;
@@ -154,7 +212,7 @@ function RevenueChart({ days }: { days: DayPoint[] }) {
                       fontWeight={700}
                       pointerEvents="none"
                     >
-                      {AMD(d.total)}
+                      {label(v)}
                     </text>
                   )}
                 </g>
@@ -181,7 +239,7 @@ function RevenueChart({ days }: { days: DayPoint[] }) {
           </svg>
 
           <div className="adm-hint">
-            Максимум за день — {AMD(max)}. Наведите на столбик, чтобы увидеть сумму.
+            Максимум за день — {label(max)}. Наведите на столбик, чтобы увидеть значение.
           </div>
         </>
       )}
@@ -189,8 +247,18 @@ function RevenueChart({ days }: { days: DayPoint[] }) {
   );
 }
 
-/** Заказы по этапам: горизонтальные полосы, шкала одного хью. */
-function StatusChart({ statuses }: { statuses: StatusPoint[] }) {
+/** Этапы горизонтальными полосами, шкала одного хью. */
+function StatusChart({
+  statuses,
+  title,
+  empty,
+  labels = STAGE_LABEL,
+}: {
+  statuses: StatusPoint[];
+  title: string;
+  empty: string;
+  labels?: Record<string, string>;
+}) {
   const order = ["new", "confirmed", "delivering", "done", "declined"];
   const rows = order
     .map((s) => ({ status: s, count: statuses.find((x) => x.status === s)?.count ?? 0 }))
@@ -200,18 +268,18 @@ function StatusChart({ statuses }: { statuses: StatusPoint[] }) {
 
   return (
     <section className="adm-card">
-      <h2 className="adm-chart-title">Заказы по этапам</h2>
+      <h2 className="adm-chart-title">{title}</h2>
 
       {rows.length === 0 ? (
         <p className="adm-hint" style={{ margin: 0 }}>
-          Заказов пока нет.
+          {empty}
         </p>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {rows.map((r) => (
             <div key={r.status} style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <span style={{ width: 120, fontSize: 13, color: INK_2 }}>
-                {STAGE_LABEL[r.status] ?? r.status}
+                {labels[r.status] ?? r.status}
               </span>
               <div style={{ flex: 1, height: 14, position: "relative" }}>
                 <div

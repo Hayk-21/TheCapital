@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import Link from "next/link";
-import { createBrand, deleteBrand, moveBrand, updateBrand } from "@/lib/actions";
+import { useRouter } from "next/navigation";
+import { createBrand, deleteBrand, moveBrand, setSlotMedia, updateBrand } from "@/lib/actions";
+import { uploadImage } from "@/lib/upload-client";
 
 export type BrandRow = {
   id: string;
@@ -12,9 +14,81 @@ export type BrandRow = {
   products: number;
   variants: number;
   hidden: number;
+  /** Адрес логотипа или null, если его ещё не загрузили. */
+  logo: string | null;
 };
 
 export type CategoryRow = { key: string; title: string };
+
+/**
+ * Логотип бренда в списке.
+ *
+ * Картинка кладётся в тот же слот `shop.brand.<id>`, что правится на витрине:
+ * здесь удобно залить логотипы пачкой, там — поменять один, глядя на плитку.
+ */
+function LogoCell({ brand, disabled }: { brand: BrandRow; disabled: boolean }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const router = useRouter();
+
+  const slotKey = `shop.brand.${brand.id}`;
+
+  const pick = async (file: File) => {
+    setBusy(true);
+    try {
+      const id = await uploadImage(file);
+      await setSlotMedia(slotKey, id);
+      router.refresh();
+    } catch (err) {
+      console.error(err);
+      alert("Не удалось загрузить логотип");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <button
+        type="button"
+        className="adm-logo"
+        title={brand.logo ? "Заменить логотип" : "Загрузить логотип"}
+        disabled={disabled || busy}
+        onClick={() => inputRef.current?.click()}
+      >
+        {busy ? "…" : brand.logo ? <img src={brand.logo} alt="" /> : "+"}
+      </button>
+
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        hidden
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) void pick(file);
+          e.target.value = "";
+        }}
+      />
+
+      {brand.logo && (
+        <button
+          type="button"
+          className="adm-btn"
+          data-size="s"
+          data-variant="ghost"
+          title="Убрать логотип"
+          disabled={disabled || busy}
+          onClick={() =>
+            void setSlotMedia(slotKey, null).then(() => router.refresh())
+          }
+        >
+          ✕
+        </button>
+      )}
+    </div>
+  );
+}
 
 export function BrandsTable({
   categories,
@@ -78,6 +152,7 @@ export function BrandsTable({
         <table className="adm-table">
           <thead>
             <tr>
+              <th>Логотип</th>
               <th>Бренд</th>
               <th>Позиций</th>
               <th>На сайте</th>
@@ -88,6 +163,10 @@ export function BrandsTable({
           <tbody>
             {rows.map((b) => (
               <tr key={b.id} style={{ opacity: pending ? 0.6 : 1 }}>
+                <td data-tight>
+                  <LogoCell brand={b} disabled={pending} />
+                </td>
+
                 <td>
                   {editing === b.id ? (
                     <form

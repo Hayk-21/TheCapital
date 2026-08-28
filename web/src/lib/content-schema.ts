@@ -176,6 +176,16 @@ export const SETTINGS: SettingDef[] = [
   { key: "telegram", label: "Telegram", hint: "Полная ссылка" },
   { key: "whatsapp", label: "WhatsApp", hint: "Полная ссылка" },
   { key: "mapQuery", label: "Адрес для карты", hint: "Строка запроса для Google Maps" },
+  {
+    key: "shopOpenFrom",
+    label: "Магазин: заказы с",
+    hint: "Время по Еревану, например 11:30. Раньше этого заказ не оформить",
+  },
+  {
+    key: "shopOpenTo",
+    label: "Магазин: заказы до",
+    hint: "Например 00:00. Если начало и конец совпадают — заказы принимаются круглосуточно",
+  },
 ];
 
 export const SETTING_KEYS = SETTINGS.map((s) => s.key);

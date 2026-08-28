@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { SiteShell } from "@/components/site/SiteShell";
 import { ShopView } from "@/components/shop/ShopView";
+import { AgeGate } from "@/components/shop/AgeGate";
 import { db } from "@/lib/db";
 import { preparePage, type RouteParams, type RouteSearch } from "@/lib/page-setup";
 
@@ -34,29 +35,32 @@ export default async function ShopPage(props: RouteParams & RouteSearch) {
 
   return (
     <SiteShell content={content} lang={lang} canEdit={canEdit} editing={editing}>
-      <ShopView
-        categories={categories.map((c) => ({
-          key: c.key,
-          title: { en: c.titleEn, ru: c.titleRu },
-          visible: c.visible,
-        }))}
-        brands={brands.map((b) => ({
-          id: b.id,
-          category: b.category,
-          name: b.name,
-          visible: b.visible,
-          products: b.products.map((p) => ({
-            id: p.id,
-            name: p.name,
-            variants: p.variants.map((v) => ({
-              id: v.id,
-              size: v.size,
-              price: v.price,
-              inStock: v.inStock,
+      {/* Табак продаём только взрослым: до подтверждения витрина под шторкой. */}
+      <AgeGate>
+        <ShopView
+          categories={categories.map((c) => ({
+            key: c.key,
+            title: { en: c.titleEn, ru: c.titleRu },
+            visible: c.visible,
+          }))}
+          brands={brands.map((b) => ({
+            id: b.id,
+            category: b.category,
+            name: b.name,
+            visible: b.visible,
+            products: b.products.map((p) => ({
+              id: p.id,
+              name: p.name,
+              variants: p.variants.map((v) => ({
+                id: v.id,
+                size: v.size,
+                price: v.price,
+                inStock: v.inStock,
+              })),
             })),
-          })),
-        }))}
-      />
+          }))}
+        />
+      </AgeGate>
     </SiteShell>
   );
 }

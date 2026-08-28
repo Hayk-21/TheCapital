@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { SiteShell } from "@/components/site/SiteShell";
 import { OrderView } from "@/components/shop/OrderView";
+import { AgeGate } from "@/components/shop/AgeGate";
 import { preparePage, type RouteParams, type RouteSearch } from "@/lib/page-setup";
 
 export const metadata: Metadata = {
@@ -14,7 +15,9 @@ export default async function OrderPage(props: RouteParams & RouteSearch) {
 
   return (
     <SiteShell content={content} lang={lang} canEdit={canEdit} editing={editing}>
-      <OrderView />
+      <AgeGate>
+        <OrderView />
+      </AgeGate>
     </SiteShell>
   );
 }

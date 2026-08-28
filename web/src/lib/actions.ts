@@ -5,6 +5,7 @@ import { db } from "./db";
 import { requireSession } from "./auth";
 import { entrySlotKey, listDef, type Lang } from "./content-schema";
 import { DELIVERY_FEE, type OrderInput } from "./order";
+import { formatHours, isShopOpen, shopHours } from "./hours";
 
 // Все действия редактора живут здесь. Каждое проверяет сессию — server action
 // доступен по сети, поэтому «кнопки не видно» защитой не считается.
@@ -493,6 +494,21 @@ export async function deleteBooking(id: string) {
  * меню задним числом не меняла уже оформленный заказ.
  */
 export async function createOrder(input: OrderInput) {
+  // Часы проверяем на сервере, а не только кнопкой на витрине: server action
+  // доступен по сети, и ночной заказ иначе прошёл бы мимо закрытого магазина.
+  const hours = shopHours(
+    Object.fromEntries(
+      (
+        await db.setting.findMany({
+          where: { key: { in: ["shopOpenFrom", "shopOpenTo"] } },
+        })
+      ).map((s) => [s.key, s.value]),
+    ),
+  );
+  if (!isShopOpen(hours)) {
+    throw new Error(`Заказы принимаем с ${formatHours(hours)}`);
+  }
+
   const name = input.name?.trim();
   const phone = input.phone?.trim();
   if (!name || !phone) throw new Error("Имя и телефон обязательны");
@@ -543,7 +559,8 @@ export async function createOrder(input: OrderInput) {
       phone: phone.slice(0, 60),
       address: kind === "delivery" ? address!.slice(0, 300) : null,
       comment: input.comment?.slice(0, 1000) || null,
-      atTime: input.atTime?.slice(0, 60) || null,
+      // Времени нет: заказ с сайта уходит в работу сразу.
+      atTime: null,
       itemsTotal,
       deliveryFee,
       total: itemsTotal + deliveryFee,
@@ -876,7 +893,8 @@ export async function createOrderByAdmin(input: {
       phone: phone.slice(0, 60),
       address: input.kind === "delivery" ? input.address?.slice(0, 300) || null : null,
       comment: input.comment?.slice(0, 1000) || null,
-      atTime: input.atTime?.slice(0, 60) || null,
+      // Времени нет: заказ с сайта уходит в работу сразу.
+      atTime: null,
       itemsTotal,
       deliveryFee,
       total: itemsTotal + deliveryFee,

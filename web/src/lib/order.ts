@@ -7,13 +7,16 @@ import type { Lang } from "./content-schema";
 
 export type OrderLineInput = { itemId: string; qty: number; note?: string };
 
+/**
+ * Заказ с сайта. Времени в нём нет намеренно: заказ уходит в работу сразу,
+ * выбрать час гость не может — так решили 28 августа 2026.
+ */
 export type OrderInput = {
   kind: "delivery" | "pickup";
   name?: string;
   phone?: string;
   address?: string;
   comment?: string;
-  atTime?: string;
   lang?: Lang;
   lines: OrderLineInput[];
 };

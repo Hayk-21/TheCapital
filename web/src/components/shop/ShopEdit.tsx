@@ -18,6 +18,7 @@ import {
   updateProduct,
   updateVariant,
 } from "@/lib/actions";
+import { BrandLogoEdit } from "./BrandLogo";
 import type { ShopBrand, ShopCategory, ShopProduct, ShopVariant } from "./ShopView";
 import type { Lang } from "@/lib/content-schema";
 
@@ -96,6 +97,8 @@ export function BrandCardEdit({
           ✕
         </button>
       </span>
+
+      <BrandLogoEdit brandId={brand.id} name={brand.name} save={save} />
 
       <Editable
         value={brand.name}

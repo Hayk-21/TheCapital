@@ -11,12 +11,20 @@ export default async function ShopAdminPage() {
     include: { products: { include: { variants: true } } },
   });
 
+  // Логотипы лежат в обычных слотах картинок — тех же, что правятся на витрине.
+  const logoSlots = await db.imageSlot.findMany({
+    where: { key: { in: brands.map((b) => `shop.brand.${b.id}`) } },
+    include: { media: { select: { path: true } } },
+  });
+  const logos = new Map(logoSlots.map((s) => [s.key, s.media?.path ?? null]));
+
   return (
     <>
       <h1 className="adm-title">Магазин</h1>
       <p className="adm-sub">
         Бренды и позиции страницы «Наши дистрибуции». Скрытый бренд пропадает
-        с сайта вместе со всеми своими позициями.
+        с сайта вместе со всеми своими позициями. Логотип показывается на плитке
+        бренда в магазине.
       </p>
 
       <BrandsTable
@@ -29,6 +37,7 @@ export default async function ShopAdminPage() {
           products: b.products.length,
           variants: b.products.reduce((n, p) => n + p.variants.length, 0),
           hidden: b.products.filter((p) => !p.visible).length,
+          logo: logos.get(`shop.brand.${b.id}`) ?? null,
         }))}
       />
     </>

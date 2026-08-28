@@ -6,8 +6,11 @@ import { useContent } from "@/components/editor/ContentProvider";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { useCart } from "./CartProvider";
+import { ClosedNotice } from "./ClosedNotice";
 import { createOrder } from "@/lib/actions";
 import { DELIVERY_FEE } from "@/lib/order";
+import { formatHours } from "@/lib/hours";
+import { useShopOpen } from "./useShopOpen";
 import { formatPrice } from "@/lib/view";
 import {
   FIELD_LABEL,
@@ -24,6 +27,7 @@ type Kind = "delivery" | "pickup";
 export function OrderView() {
   const { lang, content } = useContent();
   const { lines, total, setQty, remove, clear, ready } = useCart();
+  const { hours, open } = useShopOpen();
 
   const [kind, setKind] = useState<Kind>("delivery");
   const [sent, setSent] = useState<{ number: number; total: number } | null>(null);
@@ -34,6 +38,10 @@ export function OrderView() {
   const fee = kind === "delivery" ? DELIVERY_FEE : 0;
 
   async function submit(form: FormData) {
+    if (!open) {
+      setError(true);
+      return;
+    }
     setBusy(true);
     setError(false);
     try {
@@ -43,7 +51,6 @@ export function OrderView() {
         phone: String(form.get("phone") ?? ""),
         address: String(form.get("address") ?? ""),
         comment: String(form.get("comment") ?? ""),
-        atTime: String(form.get("atTime") ?? ""),
         lang,
         lines: lines.map((l) => ({ itemId: l.itemId, qty: l.qty, note: l.note })),
       });
@@ -99,6 +106,8 @@ export function OrderView() {
         <span style={PAGE_KICKER}>{t("Order", "Заказ")}</span>
         <h1 style={PAGE_TITLE}>{t("Your order", "Ваш заказ")}</h1>
       </section>
+
+      <ClosedNotice />
 
       {ready && lines.length === 0 ? (
         <section className="cap-shop-section" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -242,11 +251,6 @@ export function OrderView() {
                 />
               )}
 
-              <Field
-                label={t("When", "Когда")}
-                name="atTime"
-                placeholder={t("as soon as possible", "как можно скорее")}
-              />
               <Field label={t("Comment", "Комментарий")} name="comment" />
 
               <div
@@ -278,21 +282,30 @@ export function OrderView() {
 
               <p style={{ margin: 0, fontSize: 12, color: "#8e857c", lineHeight: 1.5 }}>
                 {t(
-                  "Payment on receipt. Card payment on the site is coming later.",
-                  "Оплата при получении. Оплата картой на сайте появится позже.",
+                  "The order goes to the kitchen right away — no time slot to pick. Payment on receipt.",
+                  "Заказ уходит в работу сразу — время выбирать не нужно. Оплата при получении.",
                 )}
               </p>
 
-              <button type="submit" className="btn btn-primary" disabled={busy}>
-                {busy ? t("Sending…", "Отправляю…") : t("Place order", "Оформить заказ")}
+              <button type="submit" className="btn btn-primary" disabled={busy || !open}>
+                {busy
+                  ? t("Sending…", "Отправляю…")
+                  : open
+                    ? t("Place order", "Оформить заказ")
+                    : t("Shop is closed", "Магазин закрыт")}
               </button>
 
               {error && (
                 <p style={{ margin: 0, color: "var(--color-accent)", fontSize: 14 }}>
-                  {t(
-                    "Could not place the order. Please call us instead.",
-                    "Не удалось оформить заказ. Позвоните нам, пожалуйста.",
-                  )}
+                  {open
+                    ? t(
+                        "Could not place the order. Please call us instead.",
+                        "Не удалось оформить заказ. Позвоните нам, пожалуйста.",
+                      )
+                    : t(
+                        `We take orders from ${formatHours(hours)}.`,
+                        `Заказы принимаем с ${formatHours(hours)}.`,
+                      )}
                 </p>
               )}
             </form>

@@ -873,6 +873,28 @@ textarea.adm-input { min-height: 80px; resize: vertical; }
 .cap-order-grid > div { padding: 36px 32px 56px; }
 .cap-order-grid > div:first-child { border-right: 2px solid #3b332c; }
 
+/* Логотип бренда в списке магазина: постоянная рамка, чтобы строки таблицы
+   не прыгали от того, загружен логотип или нет. */
+.adm-logo {
+  width: 64px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 4px;
+  background: #17130f;
+  border: 1px solid #3b332c;
+  color: #8e857c;
+  font-size: 18px;
+  cursor: pointer;
+}
+.adm-logo:hover { border-color: #7d746b; color: #f4f1ee; }
+.adm-logo:disabled { opacity: 0.5; cursor: default; }
+.adm-logo img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
 /* Текст, который ведёт себя как ссылка: правка по клику в таблицах админки. */
 .adm-linkish {
   font: inherit;
@@ -1025,6 +1047,117 @@ header nav a:hover::after { transform: scaleX(1); }
   transform: translateY(-2px);
   box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55);
 }
+
+/* ── Магазин: логотипы брендов, шторка 18+, часы приёма ───────── */
+
+/* Логотип на плитке бренда: место фиксированное, чтобы плитки без
+   логотипа и с логотипом стояли в одной сетке и не прыгали. */
+.cap-brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 54px;
+  margin-bottom: 4px;
+}
+.cap-brand-logo img {
+  max-height: 54px;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: left center;
+}
+.cap-brand-logo[data-edit="true"] {
+  height: auto;
+  min-height: 54px;
+  flex-wrap: wrap;
+}
+/* Рядом с заголовком бренда логотип крупнее — там есть место. */
+.cap-brand-logo-lg { height: 64px; }
+.cap-brand-logo-lg img { max-height: 64px; max-width: 260px; }
+
+/* Витрина открыта всегда, поэтому о закрытии говорим полосой над каталогом,
+   а не пустой страницей. */
+.cap-closed {
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
+  padding: 16px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-top: 2px solid #3b332c;
+  border-bottom: 2px solid #3b332c;
+  background: #241d18;
+}
+.cap-closed strong {
+  font-family: var(--font-heading);
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  color: var(--color-accent);
+}
+.cap-closed span {
+  font-size: 13px;
+  color: #a89f96;
+  line-height: 1.5;
+  max-width: 68ch;
+}
+.cap-cart-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.cap-cart-btn:disabled:hover { transform: none; filter: none; }
+
+/* Шторка «вам есть 18?» — поверх всей витрины, до ответа дальше не пройти. */
+.cap-age {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(12, 10, 8, 0.86);
+  backdrop-filter: blur(6px);
+}
+.cap-age-card {
+  width: min(460px, 100%);
+  padding: 34px 30px 30px;
+  background: #1f1915;
+  border: 2px solid #3b332c;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.cap-age-kicker {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.28em;
+  color: var(--color-accent);
+}
+.cap-age-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 1.1;
+  margin: 0;
+}
+.cap-age-text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #a89f96;
+}
+.cap-age-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+.cap-age-no {
+  background: transparent;
+  border: 2px solid #4a4038;
+  color: #b9b0a7;
+}
+.cap-age-no:hover { color: #f4f1ee; border-color: #7d746b; }
 
 /* Кому движение мешает — не двигаем ничего: и анимации, и переходы. */
 @media (prefers-reduced-motion: reduce) {

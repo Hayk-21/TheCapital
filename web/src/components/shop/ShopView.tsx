@@ -16,6 +16,9 @@ import {
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { useCart } from "./CartProvider";
+import { useShopOpen } from "./useShopOpen";
+import { ClosedNotice } from "./ClosedNotice";
+import { BrandLogo } from "./BrandLogo";
 import { formatPrice } from "@/lib/view";
 import { INPUT, PAGE, PAGE_KICKER, PAGE_TITLE } from "@/components/site/styles";
 import type { Lang } from "@/lib/content-schema";
@@ -52,6 +55,7 @@ export function ShopView({
 }) {
   const { lang, content, editing, save } = useContent();
   const { add } = useCart();
+  const { open } = useShopOpen();
 
   const [category, setCategory] = useState(categories[0]?.key ?? "tobacco");
   const [openBrand, setOpenBrand] = useState<string | null>(null);
@@ -109,6 +113,8 @@ export function ShopView({
           style={{ margin: 0, maxWidth: "56ch", color: "#a89f96", lineHeight: 1.6, fontSize: 17 }}
         />
       </section>
+
+      <ClosedNotice />
 
       {brands.length === 0 ? (
         <section className="cap-shop-section" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -182,6 +188,7 @@ export function ShopView({
                         product={p}
                         brandName={b.name}
                         lang={lang}
+                        canOrder={open}
                         onAdd={(v) => addLine(b, p, v)}
                       />
                     ))}
@@ -214,6 +221,7 @@ export function ShopView({
                       className="cap-brand-card"
                       onClick={() => setOpenBrand(b.id)}
                     >
+                      <BrandLogo brandId={b.id} name={b.name} />
                       <span className="cap-brand-name">{b.name}</span>
                       <span className="cap-brand-meta">
                         {b.products.length} {plural(b.products.length, lang, b.category)}
@@ -240,7 +248,7 @@ export function ShopView({
               <div
                 style={{
                   display: "flex",
-                  alignItems: "baseline",
+                  alignItems: "center",
                   gap: 16,
                   flexWrap: "wrap",
                   marginBottom: 24,
@@ -257,9 +265,12 @@ export function ShopView({
                     onSave={(next) => save(() => updateBrand(brand.id, { name: next }))}
                   />
                 ) : (
-                  <h2 className="cap-shop-brand-title" style={{ margin: 0 }}>
-                    {brand.name}
-                  </h2>
+                  <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                    <BrandLogo brandId={brand.id} name={brand.name} size="lg" />
+                    <h2 className="cap-shop-brand-title" style={{ margin: 0 }}>
+                      {brand.name}
+                    </h2>
+                  </div>
                 )}
                 <span className="cap-shop-count" style={{ margin: 0 }}>
                   {brand.products.length} {plural(brand.products.length, lang, brand.category)}
@@ -271,7 +282,13 @@ export function ShopView({
                   editing ? (
                     <ProductCardEdit key={p.id} product={p} save={save} />
                   ) : (
-                    <ProductCard key={p.id} product={p} lang={lang} onAdd={(v) => addLine(brand, p, v)} />
+                    <ProductCard
+                      key={p.id}
+                      product={p}
+                      lang={lang}
+                      canOrder={open}
+                      onAdd={(v) => addLine(brand, p, v)}
+                    />
                   ),
                 )}
                 {editing && <AddProduct brandId={brand.id} save={save} />}
@@ -308,12 +325,15 @@ function ProductCard({
   product,
   brandName,
   lang,
+  canOrder,
   onAdd,
 }: {
   product: ShopProduct;
   /** Показываем бренд только там, где вкусы разных брендов идут вперемешку. */
   brandName?: string;
   lang: Lang;
+  /** Магазин закрыт — цену показываем, а положить в корзину не даём. */
+  canOrder: boolean;
   onAdd: (v: ShopVariant) => void;
 }) {
   const sellable = product.variants.filter((v) => v.inStock);
@@ -359,12 +379,20 @@ function ProductCard({
               type="button"
               className="cap-cart-btn"
               style={{ marginLeft: "auto" }}
+              disabled={!canOrder}
               onClick={() => {
                 onAdd(variant);
                 setJustAdded(true);
                 setTimeout(() => setJustAdded(false), 900);
               }}
-              aria-label={t("Add to order", "Добавить в заказ")}
+              aria-label={
+                canOrder
+                  ? t("Add to order", "Добавить в заказ")
+                  : t("Orders are closed now", "Сейчас заказы не принимаем")
+              }
+              title={
+                canOrder ? undefined : t("Orders are closed now", "Сейчас заказы не принимаем")
+              }
             >
               {justAdded ? "✓" : "+"}
             </button>

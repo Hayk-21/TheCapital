@@ -33,6 +33,8 @@ const SETTINGS: Record<string, string> = {
   telegram: "https://t.me",
   whatsapp: "https://wa.me/37491282820",
   mapQuery: "27 Mesrop Mashtots Ave, Yerevan, Armenia",
+  shopOpenFrom: "11:30",
+  shopOpenTo: "00:00",
 };
 
 // ─────────────────────────────────────────────────────────────
