@@ -11,10 +11,10 @@ export const metadata: Metadata = {
 
 /** Страница корзины и оформления. Контент берём из «Контактов»: там телефон и подвал. */
 export default async function OrderPage(props: RouteParams & RouteSearch) {
-  const { content, lang, canEdit, editing } = await preparePage("visit", props);
+  const { content, lang, canEdit, editing, news } = await preparePage("visit", props);
 
   return (
-    <SiteShell content={content} lang={lang} canEdit={canEdit} editing={editing}>
+    <SiteShell content={content} lang={lang} canEdit={canEdit} editing={editing} news={news}>
       <AgeGate>
         <OrderView />
       </AgeGate>

@@ -78,6 +78,15 @@ export function BrandCardEdit({
         <button
           type="button"
           className="cap-tool-btn"
+          data-active={brand.isNew ? "true" : undefined}
+          title={brand.isNew ? "Убрать бренд из новинок" : "Показать бренд в новинках"}
+          onClick={() => save(() => updateBrand(brand.id, { isNew: !brand.isNew }))}
+        >
+          {brand.isNew ? "не новинка" : "новинка"}
+        </button>
+        <button
+          type="button"
+          className="cap-tool-btn"
           title="Скрыть бренд с сайта"
           onClick={() => save(() => updateBrand(brand.id, { visible: false }))}
         >
@@ -156,6 +165,15 @@ export function ProductCardEdit({ product, save }: { product: ShopProduct; save:
   return (
     <div className="cap-product cap-editable-block">
       <span className="cap-block-tools">
+        <button
+          type="button"
+          className="cap-tool-btn"
+          data-active={product.isNew ? "true" : undefined}
+          title={product.isNew ? "Убрать из новинок" : "Показать в новинках"}
+          onClick={() => save(() => updateProduct(product.id, { isNew: !product.isNew }))}
+        >
+          {product.isNew ? "не новинка" : "новинка"}
+        </button>
         <button
           type="button"
           className="cap-tool-btn"

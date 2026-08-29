@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default async function ShopPage(props: RouteParams & RouteSearch) {
   // Контент берём со страницы «Контакты»: оттуда телефон и подвал.
   const setup = await preparePage("shop", props);
-  const { content, lang, canEdit, editing } = setup;
+  const { content, lang, canEdit, editing, news } = setup;
 
   const categories = await db.productCategory.findMany({
     where: editing ? {} : { visible: true },
@@ -34,10 +34,11 @@ export default async function ShopPage(props: RouteParams & RouteSearch) {
   });
 
   return (
-    <SiteShell content={content} lang={lang} canEdit={canEdit} editing={editing}>
+    <SiteShell content={content} lang={lang} canEdit={canEdit} editing={editing} news={news}>
       {/* Табак продаём только взрослым: до подтверждения витрина под шторкой. */}
       <AgeGate>
         <ShopView
+          news={news}
           categories={categories.map((c) => ({
             key: c.key,
             title: { en: c.titleEn, ru: c.titleRu },
@@ -48,13 +49,16 @@ export default async function ShopPage(props: RouteParams & RouteSearch) {
             category: b.category,
             name: b.name,
             visible: b.visible,
+            isNew: b.isNew,
             products: b.products.map((p) => ({
               id: p.id,
               name: p.name,
+              isNew: p.isNew,
               variants: p.variants.map((v) => ({
                 id: v.id,
                 size: v.size,
                 price: v.price,
+                oldPrice: v.oldPrice,
                 inStock: v.inStock,
               })),
             })),

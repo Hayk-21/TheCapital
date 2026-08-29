@@ -11,11 +11,20 @@ import {
   updateVariant,
 } from "@/lib/actions";
 
-export type VariantRow = { id: string; size: string; price: number; inStock: boolean };
+export type VariantRow = {
+  id: string;
+  size: string;
+  price: number;
+  /** Цена до скидки: на сайте она зачёркнута рядом с новой. */
+  oldPrice: number | null;
+  inStock: boolean;
+};
 export type ProductRow = {
   id: string;
   name: string;
   visible: boolean;
+  /** Новый вкус: попадает в новинки на сайте. */
+  isNew: boolean;
   descRu: string | null;
   variants: VariantRow[];
 };
@@ -112,6 +121,7 @@ export function ProductsTable({
               <th>Позиция</th>
               <th>Фасовки и цены</th>
               <th>На сайте</th>
+              <th>Новинка</th>
               <th />
             </tr>
           </thead>
@@ -179,6 +189,20 @@ export function ProductsTable({
                   <button
                     type="button"
                     className="adm-btn"
+                    data-variant={p.isNew ? undefined : "ghost"}
+                    title={
+                      p.isNew ? "Убрать из новинок" : "Показать в новинках на сайте"
+                    }
+                    onClick={() => run(() => updateProduct(p.id, { isNew: !p.isNew }))}
+                  >
+                    {p.isNew ? "новинка" : "обычная"}
+                  </button>
+                </td>
+
+                <td>
+                  <button
+                    type="button"
+                    className="adm-btn"
                     data-variant="ghost"
                     onClick={() => {
                       if (confirm(`Удалить «${p.name}»?`)) run(() => deleteProduct(p.id));
@@ -209,6 +233,7 @@ function VariantChip({
   const [open, setOpen] = useState(false);
   const [size, setSize] = useState(variant.size);
   const [price, setPrice] = useState(String(variant.price));
+  const [oldPrice, setOldPrice] = useState(variant.oldPrice ? String(variant.oldPrice) : "");
 
   if (open) {
     return (
@@ -216,9 +241,12 @@ function VariantChip({
         onSubmit={(e) => {
           e.preventDefault();
           run(async () => {
+            const was = Number(oldPrice.replace(/[^\d]/g, "")) || 0;
             await updateVariant(variant.id, {
               size,
               price: Number(price.replace(/[^\d]/g, "")) || 0,
+              // Пустое поле — скидки нет, старая цена стирается.
+              oldPrice: was > 0 ? was : null,
             });
             setOpen(false);
           });
@@ -237,6 +265,15 @@ function VariantChip({
           inputMode="numeric"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
+        />
+        <input
+          className="adm-input"
+          style={{ width: 110 }}
+          inputMode="numeric"
+          value={oldPrice}
+          onChange={(e) => setOldPrice(e.target.value)}
+          placeholder="была"
+          title="Цена до скидки. Пусто — скидки нет"
         />
         <button type="submit" className="adm-btn">
           ОК
@@ -267,7 +304,14 @@ function VariantChip({
       }}
     >
       <button type="button" className="adm-linkish" onClick={() => setOpen(true)}>
-        {variant.size} · {amd(variant.price)}
+        {variant.size} ·{" "}
+        {variant.oldPrice && variant.oldPrice > variant.price ? (
+          <>
+            <s style={{ opacity: 0.6 }}>{amd(variant.oldPrice)}</s> {amd(variant.price)}
+          </>
+        ) : (
+          amd(variant.price)
+        )}
       </button>
       <button
         type="button"

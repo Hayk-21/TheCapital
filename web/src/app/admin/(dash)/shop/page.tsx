@@ -24,7 +24,8 @@ export default async function ShopAdminPage() {
       <p className="adm-sub">
         Бренды и позиции страницы «Наши дистрибуции». Скрытый бренд пропадает
         с сайта вместе со всеми своими позициями. Логотип показывается на плитке
-        бренда в магазине.
+        бренда в магазине, а «новинка» выводит бренд в полосу над шапкой сайта
+        и в блок новинок.
       </p>
 
       <BrandsTable
@@ -37,6 +38,7 @@ export default async function ShopAdminPage() {
           products: b.products.length,
           variants: b.products.reduce((n, p) => n + p.variants.length, 0),
           hidden: b.products.filter((p) => !p.visible).length,
+          isNew: b.isNew,
           logo: logos.get(`shop.brand.${b.id}`) ?? null,
         }))}
       />

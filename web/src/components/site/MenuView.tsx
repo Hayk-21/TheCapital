@@ -18,9 +18,11 @@ import {
   saveMenuGroup,
   saveMenuItem,
 } from "@/lib/actions";
+import { NewsSection } from "@/components/shop/NewsSection";
 import { formatPrice, type MenuGroupView } from "@/lib/view";
+import type { NewsItem } from "@/lib/news";
 
-export function MenuView({ groups }: { groups: MenuGroupView[] }) {
+export function MenuView({ groups, news = [] }: { groups: MenuGroupView[]; news?: NewsItem[] }) {
   const { content, lang, editing } = useContent();
   const shisha = groups.filter((g) => g.section === "shisha");
   const kitchen = groups.filter((g) => g.section === "kitchen");
@@ -68,6 +70,9 @@ export function MenuView({ groups }: { groups: MenuGroupView[] }) {
           <Slot image={content.images["menu.hero"] ?? null} />
         </div>
       </section>
+
+      {/* Новинки магазина: гость кафе тоже должен видеть, что привезли. */}
+      <NewsSection news={news} />
 
       {/* ── Кальяны ──────────────────────────────────────────── */}
       <section

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getPageContent } from "./content";
+import { getShopNews } from "./news";
 import { getSession } from "./auth";
 import { LANGS, type Lang, type Scope } from "./content-schema";
 
@@ -24,11 +25,17 @@ export async function preparePage(
   const lang = assertLang(rawLang);
 
   const search = props.searchParams ? await props.searchParams : {};
-  const [content, session] = await Promise.all([getPageContent(scope), getSession()]);
+  // Новинки нужны на каждой странице: полоса о них висит над шапкой везде.
+  const [content, session, news] = await Promise.all([
+    getPageContent(scope),
+    getSession(),
+    getShopNews(),
+  ]);
 
   return {
     lang,
     content,
+    news,
     canEdit: Boolean(session),
     editing: search.edit === "1",
   };

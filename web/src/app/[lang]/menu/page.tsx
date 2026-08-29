@@ -9,13 +9,13 @@ export async function generateMetadata(props: RouteParams): Promise<Metadata> {
 }
 
 export default async function MenuPage(props: RouteParams & RouteSearch) {
-  const { content, lang, canEdit, editing } = await preparePage("menu", props);
+  const { content, lang, canEdit, editing, news } = await preparePage("menu", props);
   // В режиме правки показываем и скрытые позиции — иначе их не вернуть обратно.
   const groups = editing ? await getMenuGroupsForAdmin() : await getMenuGroups();
 
   return (
-    <SiteShell content={content} lang={lang} canEdit={canEdit} editing={editing}>
-      <MenuView groups={groups} />
+    <SiteShell content={content} lang={lang} canEdit={canEdit} editing={editing} news={news}>
+      <MenuView groups={groups} news={news} />
     </SiteShell>
   );
 }

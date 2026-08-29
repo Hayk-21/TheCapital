@@ -205,6 +205,8 @@ model ProductBrand {
   name     String
   position Int
   visible  Boolean   @default(true)
+  /// Новая линейка: попадает в плашку «новинки» и в блок над каталогом.
+  isNew    Boolean   @default(false)
   products Product[]
 
   @@unique([category, name])
@@ -223,6 +225,8 @@ model Product {
   descRu   String?
   position Int
   visible  Boolean @default(true)
+  /// Новый вкус: показывается в «новинках» вместе с новыми брендами.
+  isNew    Boolean @default(false)
 
   variants ProductVariant[]
 
@@ -237,6 +241,8 @@ model ProductVariant {
   /// Фасовка как её показывают гостю: «25 г», «72 шт».
   size  String
   price Int
+  /// Цена до скидки. Заполнена — в карточке она зачёркнута рядом с новой.
+  oldPrice Int?
   /// Снято с продажи вручную или по остаткам из «Моего склада».
   inStock Boolean @default(true)
 

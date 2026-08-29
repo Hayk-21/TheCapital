@@ -347,6 +347,8 @@ a:hover { color: #f4f1ee; }
   white-space: nowrap;
 }
 .cap-tool-btn:hover { border-color: #ec3013; color: #ec3013; }
+/* Включённый режим (например, бренд уже в новинках) виден по заливке. */
+.cap-tool-btn[data-active="true"] { background: var(--color-accent); border-color: var(--color-accent); color: #fff; }
 .cap-tool-btn[data-danger="true"]:hover { border-color: #ec3013; background: #ec3013; color: #fff; }
 
 /* Плавающая панель редактора */
@@ -1162,6 +1164,137 @@ header nav a:hover::after { transform: scaleX(1); }
   color: #b9b0a7;
 }
 .cap-age-no:hover { color: #f4f1ee; border-color: #7d746b; }
+
+/* ── Новинки: полоса над шапкой, блок карточек, метки ────────── */
+
+/* Полоса висит над всем содержимым страницы, поэтому не sticky: гость
+   пролистал — она уехала, и каталог остался с обычной шапкой. */
+.cap-news-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 10px 40px;
+  background: var(--color-accent);
+  color: #fff;
+  font-size: 13px;
+}
+.cap-news-flag {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  background: #100d0b;
+}
+.cap-news-text { flex: 1 1 auto; min-width: 220px; }
+.cap-news-link {
+  font-weight: 700;
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+.cap-news-close {
+  font: inherit;
+  font-size: 14px;
+  line-height: 1;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  padding: 4px;
+}
+.cap-news-close:hover { color: #fff; }
+
+/* Блок «Новинки» — та же сетка, что у брендов, но карточки шире дышат. */
+.cap-news-section { padding-bottom: 12px; }
+.cap-news-head {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.cap-news-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 26px;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.cap-news-sub { font-size: 13px; color: #8e857c; }
+/* Не grid: новинок бывает две-три, и пустые ячейки сетки выглядели бы
+   как забытые карточки. Гибкая строка растягивает те, что есть. */
+.cap-news-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  background: #3b332c;
+  border: 2px solid #3b332c;
+}
+.cap-news-card {
+  flex: 1 1 232px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px;
+  min-height: 150px;
+  color: #f4f1ee;
+  background: linear-gradient(150deg, #2b231d 0%, #201a16 100%);
+  transition: background 0.2s ease;
+}
+.cap-news-card:hover { background: linear-gradient(150deg, #35291f 0%, #241d18 100%); }
+.cap-news-name {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.25;
+}
+.cap-news-brand {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8e857c;
+}
+.cap-news-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.cap-news-price {
+  margin-top: auto;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* Метка на карточке: «новинка» акцентом, «скидка» зелёным — рядом с
+   акцентом красный не читается, а зелёный однозначно про выгоду. */
+.cap-tag {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 6px;
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  vertical-align: middle;
+  color: #fff;
+  background: var(--color-accent);
+}
+.cap-tag[data-kind="sale"] { background: #2f7d4f; }
+.cap-news-tags .cap-tag { margin-left: 0; }
+
+/* Цена до скидки: тише и мельче новой, чтобы не спорить с ней. */
+.cap-price-old {
+  margin-right: 8px;
+  font-size: 0.8em;
+  font-weight: 400;
+  color: #8e857c;
+}
 
 /* Кому движение мешает — не двигаем ничего: и анимации, и переходы. */
 @media (prefers-reduced-motion: reduce) {

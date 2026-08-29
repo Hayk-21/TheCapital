@@ -8,10 +8,10 @@ export async function generateMetadata(props: RouteParams): Promise<Metadata> {
 }
 
 export default async function HomePage(props: RouteParams & RouteSearch) {
-  const { content, lang, canEdit, editing } = await preparePage("home", props);
+  const { content, lang, canEdit, editing, news } = await preparePage("home", props);
 
   return (
-    <SiteShell content={content} lang={lang} canEdit={canEdit} editing={editing}>
+    <SiteShell content={content} lang={lang} canEdit={canEdit} editing={editing} news={news}>
       <HomeView />
     </SiteShell>
   );

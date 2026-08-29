@@ -34,11 +34,13 @@ export default async function BrandProductsPage({
           id: p.id,
           name: p.name,
           visible: p.visible,
+          isNew: p.isNew,
           descRu: p.descRu,
           variants: p.variants.map((v) => ({
             id: v.id,
             size: v.size,
             price: v.price,
+            oldPrice: v.oldPrice,
             inStock: v.inStock,
           })),
         }))}

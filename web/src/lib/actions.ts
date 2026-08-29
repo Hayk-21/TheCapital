@@ -612,7 +612,7 @@ export async function createBrand(category: string, name: string) {
 
 export async function updateBrand(
   id: string,
-  data: { name?: string; visible?: boolean; category?: string },
+  data: { name?: string; visible?: boolean; category?: string; isNew?: boolean },
 ) {
   await requireSession();
   await db.productBrand.update({
@@ -681,7 +681,7 @@ export async function createProduct(brandId: string, name: string, size: string,
 
 export async function updateProduct(
   id: string,
-  data: { name?: string; visible?: boolean; descEn?: string; descRu?: string },
+  data: { name?: string; visible?: boolean; descEn?: string; descRu?: string; isNew?: boolean },
 ) {
   await requireSession();
   await db.product.update({
@@ -714,7 +714,7 @@ export async function createVariant(productId: string, size: string, price: numb
 
 export async function updateVariant(
   id: string,
-  data: { size?: string; price?: number; inStock?: boolean },
+  data: { size?: string; price?: number; inStock?: boolean; oldPrice?: number | null },
 ) {
   await requireSession();
   await db.productVariant.update({
@@ -723,6 +723,13 @@ export async function updateVariant(
       ...data,
       size: data.size?.trim().slice(0, 40),
       price: data.price == null ? undefined : Math.max(0, Math.round(data.price)),
+      // null стирает старую цену, 0 и мусор считаем за «скидки нет».
+      oldPrice:
+        data.oldPrice === undefined
+          ? undefined
+          : data.oldPrice === null || data.oldPrice <= 0
+            ? null
+            : Math.round(data.oldPrice),
     },
   });
   revalidatePath("/admin/shop");

@@ -19,12 +19,27 @@ import { useCart } from "./CartProvider";
 import { useShopOpen } from "./useShopOpen";
 import { ClosedNotice } from "./ClosedNotice";
 import { BrandLogo } from "./BrandLogo";
+import { NewsSection } from "./NewsSection";
 import { formatPrice } from "@/lib/view";
+import type { NewsItem } from "@/lib/news";
 import { INPUT, PAGE, PAGE_KICKER, PAGE_TITLE } from "@/components/site/styles";
 import type { Lang } from "@/lib/content-schema";
 
-export type ShopVariant = { id: string; size: string; price: number; inStock: boolean };
-export type ShopProduct = { id: string; name: string; variants: ShopVariant[] };
+export type ShopVariant = {
+  id: string;
+  size: string;
+  price: number;
+  /** Цена до скидки; заполнена — показываем зачёркнутой. */
+  oldPrice: number | null;
+  inStock: boolean;
+};
+export type ShopProduct = {
+  id: string;
+  name: string;
+  /** Новый вкус — с меткой «новинка» на карточке. */
+  isNew: boolean;
+  variants: ShopVariant[];
+};
 export type ShopCategory = {
   key: string;
   title: { en: string; ru: string };
@@ -36,6 +51,8 @@ export type ShopBrand = {
   category: string;
   name: string;
   visible: boolean;
+  /** Новая линейка целиком. */
+  isNew: boolean;
   products: ShopProduct[];
 };
 
@@ -49,9 +66,11 @@ export type ShopBrand = {
 export function ShopView({
   categories,
   brands,
+  news = [],
 }: {
   categories: ShopCategory[];
   brands: ShopBrand[];
+  news?: NewsItem[];
 }) {
   const { lang, content, editing, save } = useContent();
   const { add } = useCart();
@@ -115,6 +134,8 @@ export function ShopView({
       </section>
 
       <ClosedNotice />
+
+      <NewsSection news={news} />
 
       {brands.length === 0 ? (
         <section className="cap-shop-section" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -222,7 +243,10 @@ export function ShopView({
                       onClick={() => setOpenBrand(b.id)}
                     >
                       <BrandLogo brandId={b.id} name={b.name} />
-                      <span className="cap-brand-name">{b.name}</span>
+                      <span className="cap-brand-name">
+                        {b.name}
+                        {b.isNew && <span className="cap-tag">{t("new", "новинка")}</span>}
+                      </span>
                       <span className="cap-brand-meta">
                         {b.products.length} {plural(b.products.length, lang, b.category)}
                       </span>
@@ -343,10 +367,20 @@ function ProductCard({
 
   const t = (en: string, ru: string) => (lang === "ru" ? ru : en);
 
+  const discount = variant?.oldPrice != null && variant.oldPrice > variant.price;
+
   return (
     <div className="cap-product">
       <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-        <span className="cap-product-name">{product.name}</span>
+        <span className="cap-product-name">
+          {product.name}
+          {product.isNew && <span className="cap-tag">{t("new", "новинка")}</span>}
+          {discount && (
+            <span className="cap-tag" data-kind="sale">
+              {t("sale", "скидка")}
+            </span>
+          )}
+        </span>
         {brandName && <span className="cap-product-brand">{brandName}</span>}
       </div>
 
@@ -372,7 +406,12 @@ function ProductCard({
 
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: "auto" }}>
             <div style={{ display: "flex", flexDirection: "column" }}>
-              <span className="cap-product-price">{formatPrice(variant.price, false, lang)}</span>
+              <span className="cap-product-price">
+                {discount && (
+                  <s className="cap-price-old">{formatPrice(variant.oldPrice, false, lang)}</s>
+                )}
+                {formatPrice(variant.price, false, lang)}
+              </span>
               {sellable.length === 1 && <span className="cap-product-size">{variant.size}</span>}
             </div>
             <button

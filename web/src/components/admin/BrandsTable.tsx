@@ -14,6 +14,8 @@ export type BrandRow = {
   products: number;
   variants: number;
   hidden: number;
+  /** Новая линейка: попадает в полосу новинок над шапкой сайта. */
+  isNew: boolean;
   /** Адрес логотипа или null, если его ещё не загрузили. */
   logo: string | null;
 };
@@ -156,6 +158,7 @@ export function BrandsTable({
               <th>Бренд</th>
               <th>Позиций</th>
               <th>На сайте</th>
+              <th>Новинка</th>
               <th>Порядок</th>
               <th />
             </tr>
@@ -235,6 +238,23 @@ export function BrandsTable({
                     onClick={() => run(() => updateBrand(b.id, { visible: !b.visible }))}
                   >
                     {b.visible ? "показан" : "скрыт"}
+                  </button>
+                </td>
+
+                <td data-tight>
+                  <button
+                    type="button"
+                    className="adm-btn"
+                    data-size="s"
+                    data-variant={b.isNew ? undefined : "ghost"}
+                    title={
+                      b.isNew
+                        ? "Убрать бренд из новинок"
+                        : "Показать бренд в новинках на сайте"
+                    }
+                    onClick={() => run(() => updateBrand(b.id, { isNew: !b.isNew }))}
+                  >
+                    {b.isNew ? "новинка" : "обычный"}
                   </button>
                 </td>
 
