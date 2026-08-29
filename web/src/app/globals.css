@@ -1176,9 +1176,12 @@ header nav a:hover::after { transform: scaleX(1); }
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 18px;
   flex-wrap: wrap;
-  padding: 10px 40px 10px 44px;
+  /* Справа оставляем место под крестик: он вынесен из потока, иначе
+     содержимое смещалось бы влево от настоящего центра полосы. */
+  padding: 11px 56px;
   background:
     repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.02) 0 1px, transparent 1px 4px),
     linear-gradient(180deg, #241d18 0%, #17130f 100%);
@@ -1200,7 +1203,7 @@ header nav a:hover::after { transform: scaleX(1); }
 .cap-news-flag {
   font-family: var(--font-heading);
   font-weight: 800;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--color-accent);
@@ -1211,10 +1214,9 @@ header nav a:hover::after { transform: scaleX(1); }
 .cap-news-items {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 18px;
   flex-wrap: wrap;
-  flex: 1 1 auto;
-  min-width: 200px;
 }
 .cap-news-chip {
   display: inline-flex;
@@ -1228,22 +1230,22 @@ header nav a:hover::after { transform: scaleX(1); }
   margin-right: 9px;
 }
 .cap-news-chip img {
-  height: 22px;
-  max-width: 78px;
+  height: 26px;
+  max-width: 92px;
   object-fit: contain;
   border-radius: 4px;
 }
 .cap-news-chip-name {
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 14px;
+  font-size: 17px;
   color: #f4f1ee;
   letter-spacing: -0.01em;
 }
 .cap-news-more {
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.14em;
-  color: #8e857c;
+  color: #a89f96;
 }
 .cap-news-link {
   display: inline-flex;
@@ -1262,6 +1264,10 @@ header nav a:hover::after { transform: scaleX(1); }
 .cap-news-link span { transition: transform 0.2s cubic-bezier(0.2, 0.75, 0.25, 1); }
 .cap-news-link:hover span { transform: translateX(3px); }
 .cap-news-close {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
   font: inherit;
   font-size: 13px;
   line-height: 1;
@@ -1274,7 +1280,8 @@ header nav a:hover::after { transform: scaleX(1); }
 .cap-news-close:hover { color: #f4f1ee; }
 
 @media (max-width: 720px) {
-  .cap-news-bar { padding: 10px 20px 10px 24px; gap: 12px; }
+  .cap-news-bar { padding: 10px 34px; gap: 10px; }
+  .cap-news-chip-name { font-size: 15px; }
   /* На узком экране третий бренд уводит полосу в две строки — прячем. */
   .cap-news-chip:nth-child(n + 3) { display: none; }
 }
