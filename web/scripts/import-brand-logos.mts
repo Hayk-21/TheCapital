@@ -55,18 +55,38 @@ const MAX_WIDTH = 640;
 // углам исходников — тёмный пиксель начинается примерно на 16% высоты.
 const CORNER = 0.16;
 
-/** Обрезает углы прозрачностью, чтобы белая подложка не торчала на тёмном фоне. */
+/**
+ * Готовит плашку к тёмной витрине.
+ *
+ * У части исходников за скруглением лежит не прозрачность, а белый фон.
+ * Сначала срезаем однородные поля по краям (`trim`), потом режем углы маской,
+ * и маска берётся на пару пикселей уже картинки: ровно по краю от белого
+ * остаётся полупрозрачная кромка сглаживания, и она светилась на тёмном фоне.
+ */
 async function roundCorners(input: Buffer) {
-  const flat = await sharp(input)
+  const prepared = sharp(input).ensureAlpha();
+
+  // trim ориентируется на цвет углового пикселя: у белых плашек уберёт белые
+  // поля, у прозрачных — прозрачные. Однородного поля нет — вернёт как есть.
+  let trimmed: Buffer;
+  try {
+    trimmed = await prepared.clone().trim({ threshold: 12 }).toBuffer();
+  } catch {
+    trimmed = await prepared.clone().toBuffer();
+  }
+
+  const flat = await sharp(trimmed)
     .resize({ width: MAX_WIDTH, withoutEnlargement: true })
     .ensureAlpha()
     .toBuffer({ resolveWithObject: true });
 
   const { width, height } = flat.info;
   const r = Math.round(height * CORNER);
+  const inset = Math.max(1, Math.round(height * 0.012));
   const mask = Buffer.from(
     `<svg width="${width}" height="${height}">` +
-      `<rect width="${width}" height="${height}" rx="${r}" ry="${r}" fill="#fff"/></svg>`,
+      `<rect x="${inset}" y="${inset}" width="${width - inset * 2}" ` +
+      `height="${height - inset * 2}" rx="${r}" ry="${r}" fill="#fff"/></svg>`,
   );
 
   return sharp(flat.data)
