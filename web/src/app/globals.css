@@ -1168,45 +1168,116 @@ header nav a:hover::after { transform: scaleX(1); }
 /* ── Новинки: полоса над шапкой, блок карточек, метки ────────── */
 
 /* Полоса висит над всем содержимым страницы, поэтому не sticky: гость
-   пролистал — она уехала, и каталог остался с обычной шапкой. */
+   пролистал — она уехала, и каталог остался с обычной шапкой.
+
+   Тон тот же, что у сайта: тёмное дерево, тонкая акцентная черта и знаки
+   брендов. Сплошная красная заливка кричала громче самого магазина. */
 .cap-news-bar {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 18px;
   flex-wrap: wrap;
-  padding: 10px 40px;
-  background: var(--color-accent);
-  color: #fff;
+  padding: 10px 40px 10px 44px;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.02) 0 1px, transparent 1px 4px),
+    linear-gradient(180deg, #241d18 0%, #17130f 100%);
+  border-bottom: 1px solid #3b332c;
   font-size: 13px;
+  color: #b9b0a7;
+  animation: capUp 0.7s cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+/* Акцент — узкой чертой слева, а не заливкой всей полосы. */
+.cap-news-bar::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--color-accent);
 }
 .cap-news-flag {
   font-family: var(--font-heading);
   font-weight: 800;
-  font-size: 11px;
-  letter-spacing: 0.22em;
+  font-size: 10px;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
-  padding: 3px 8px;
-  background: #100d0b;
-}
-.cap-news-text { flex: 1 1 auto; min-width: 220px; }
-.cap-news-link {
-  font-weight: 700;
-  color: #fff;
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  color: var(--color-accent);
+  border: 1px solid rgba(236, 48, 19, 0.55);
+  padding: 5px 9px;
   white-space: nowrap;
 }
+.cap-news-items {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  flex: 1 1 auto;
+  min-width: 200px;
+}
+.cap-news-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+/* Разделитель между брендами — точка, как в подписях на витрине. */
+.cap-news-chip + .cap-news-chip::before {
+  content: "·";
+  color: #5a524a;
+  margin-right: 9px;
+}
+.cap-news-chip img {
+  height: 22px;
+  max-width: 78px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+.cap-news-chip-name {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 14px;
+  color: #f4f1ee;
+  letter-spacing: -0.01em;
+}
+.cap-news-more {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: #8e857c;
+}
+.cap-news-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #f4f1ee;
+  border: 1px solid #4a4038;
+  padding: 7px 12px;
+  white-space: nowrap;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.cap-news-link:hover { color: var(--color-accent); border-color: var(--color-accent); }
+.cap-news-link span { transition: transform 0.2s cubic-bezier(0.2, 0.75, 0.25, 1); }
+.cap-news-link:hover span { transform: translateX(3px); }
 .cap-news-close {
   font: inherit;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1;
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.75);
+  color: #6f665e;
   cursor: pointer;
-  padding: 4px;
+  padding: 6px;
 }
-.cap-news-close:hover { color: #fff; }
+.cap-news-close:hover { color: #f4f1ee; }
+
+@media (max-width: 720px) {
+  .cap-news-bar { padding: 10px 20px 10px 24px; gap: 12px; }
+  /* На узком экране третий бренд уводит полосу в две строки — прячем. */
+  .cap-news-chip:nth-child(n + 3) { display: none; }
+}
 
 /* Блок «Новинки» — та же сетка, что у брендов, но карточки шире дышат. */
 .cap-news-section { padding-bottom: 12px; }

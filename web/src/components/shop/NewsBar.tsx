@@ -9,9 +9,12 @@ import type { NewsItem } from "@/lib/news";
  * Полоса над шапкой: «привезли новое».
  *
  * Висит на всех страницах, потому что про новинку должен узнать и тот, кто
- * зашёл почитать про кальянную, а не в магазин. Гость может закрыть полосу —
- * запоминаем это до следующей новинки: ключ включает состав, поэтому новый
- * товар полосу вернёт, а уже закрытую не покажет повторно.
+ * зашёл почитать про кальянную, а не в магазин. Показываем плашки брендов —
+ * гость узнаёт линейку по знаку раньше, чем прочитает название.
+ *
+ * Гость может закрыть полосу — запоминаем это до следующей новинки: ключ
+ * включает состав, поэтому новый товар полосу вернёт, а уже закрытую не
+ * покажет повторно.
  */
 export function NewsBar({ news }: { news: NewsItem[] }) {
   const { lang } = useContent();
@@ -31,10 +34,10 @@ export function NewsBar({ news }: { news: NewsItem[] }) {
   if (!key || hidden) return null;
 
   const t = (en: string, ru: string) => (lang === "ru" ? ru : en);
-  const label = (n: NewsItem) => (n.name ? `${n.brand} · ${n.name}` : n.brand);
 
-  const shown = news.slice(0, 2).map(label).join(", ");
-  const rest = news.length - Math.min(2, news.length);
+  // Больше трёх в строку не влезает, остальные считаем числом.
+  const shown = news.slice(0, 3);
+  const rest = news.length - shown.length;
 
   const close = () => {
     try {
@@ -46,15 +49,24 @@ export function NewsBar({ news }: { news: NewsItem[] }) {
   };
 
   return (
-    <div className="cap-news-bar">
-      <span className="cap-news-flag">{t("New", "Новинка")}</span>
-      <span className="cap-news-text">
-        {t("We got in", "У нас появились")}: {shown}
-        {rest > 0 ? t(` and ${rest} more`, ` и ещё ${rest}`) : ""}
+    <aside className="cap-news-bar" aria-label={t("New arrivals", "Новинки")}>
+      <span className="cap-news-flag">{t("New in", "Новинка")}</span>
+
+      <span className="cap-news-items">
+        {shown.map((n) => (
+          <span key={`${n.kind}:${n.id}`} className="cap-news-chip">
+            {n.logo && <img src={n.logo} alt="" loading="lazy" decoding="async" />}
+            <span className="cap-news-chip-name">{n.name ?? n.brand}</span>
+          </span>
+        ))}
+        {rest > 0 && <span className="cap-news-more">+{rest}</span>}
       </span>
+
       <Link href={`/${lang}/shop`} className="cap-news-link">
-        {t("Take a look →", "Посмотреть →")}
+        {t("See what's new", "Посмотреть")}
+        <span aria-hidden="true">→</span>
       </Link>
+
       <button
         type="button"
         className="cap-news-close"
@@ -63,6 +75,6 @@ export function NewsBar({ news }: { news: NewsItem[] }) {
       >
         ✕
       </button>
-    </div>
+    </aside>
   );
 }
